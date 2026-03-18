@@ -1,0 +1,18 @@
+1. Give brief answers to the following questions. Provide hand drawn figures where necessary:
+(a) Describe various different ways a signal can be classified.
+(b) What is the difference between a mathematical and physical representation of a signal?
+(c) Explain the differences between continuous-time, discrete-time, and digital signals in terms of mathematical
+and physical representations.
+(d) Describe the concept of a system and explain how it is represented mathematically.
+(e) What is a continuous-time system? A discrete-time system? Provide one example of each.
+(f) A continuous-time system is also called an analog system. Do you agree or disagree?
+(g) Why do we need interface systems and where do we need them? Provide a block-diagram description of
+such systems needed in signal processing.
+(h) Describe an analog-to-digital (A/D) converter.
+(i) Describe a digital-to-analog (D/A) converter.
+(j) What is the difference between a practical and an ideal A/D converter? Between a practical and ideal D/A
+converter?
+(k) What is signal processing and what are its different forms used in practice? Give one example of each form.
+(l) Describe analog signal processing (ASP) with the help of its simplified block diagram.
+(m) Describe digital signal processing (DSP) with the help of its simplified block diagram.
+(n) Why is DSP preferred over ASP? Are there any disadvantages?
