@@ -105,14 +105,14 @@ for ax in axs:
     ticks = np.arange(-3, 6)
     ax.set_xticks(ticks)
 
-    # 2. Apply bold math formatting to EVERY tick
-    # The f-string fr'$\mathbf{{{t}}}$' dynamically inserts each number 't' into the bold tags
-    tick_labels = [fr'$\mathbf{{{t}}}$' for t in ticks]
+    # 2. Create a list of string labels, applying bold math formatting to '0'
+    # r'$\mathbf{0}$' tells Matplotlib to render the 0 in a bold, math-style font
+    tick_labels = [r'$\mathbf{0}$' if t == 0 else str(t) for t in ticks]
 
-    # 3. Apply the custom bold labels to the axis
+    # 3. Apply the custom labels to the axis
     ax.set_xticklabels(tick_labels)
 
-    # (Optional) Keep the red vertical line for the origin
+    # (Optional) You can keep the red vertical line for extra clarity
     ax.axvline(x=0, color='red', alpha=0.3, linestyle='-', linewidth=2)
 
 plt.tight_layout()
