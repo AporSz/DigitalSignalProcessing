@@ -12,7 +12,7 @@ def convolve(x, h):
 
     for n in range(length):
         for k in range(len(x)):
-            if n - k >= 0 and n - k < len(h):
+            if 0 <= n - k < len(h):
                 y[n] += x[k] * h[n - k]
 
     return y

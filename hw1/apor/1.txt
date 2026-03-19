@@ -1,18 +1,80 @@
 1. Give brief answers to the following questions. Provide hand drawn figures where necessary:
 (a) Describe various different ways a signal can be classified.
+
+    continuous, discreet time signals, digital signals
+    deterministic, non deterministic signals
+    even, odd signals
+    periodic, aperiodic signals
+    energy, power signals
+    real, imaginary signals
+
 (b) What is the difference between a mathematical and physical representation of a signal?
+
+    The physical signal is bound by laws of nature and imperfections (ex. noise) while the mathematical signals are
+    clean and perfect, not bound by anything (no noise, no limitations)
+
 (c) Explain the differences between continuous-time, discrete-time, and digital signals in terms of mathematical
 and physical representations.
+
+    Continuous time signals are defined on R->R. Discreet time signals are defined on a set of values
+    D=(...x-1, x0, x1, x2...) where xn - xn-1 = delta for any n. The values of the signal can be from R.
+    While the digital signals are defined on D1->D2 where D1, D2 are like D.
+
 (d) Describe the concept of a system and explain how it is represented mathematically.
+
+    It's a process that transforms an input signal into an output signal based on a mathematical expression.
+
 (e) What is a continuous-time system? A discrete-time system? Provide one example of each.
+
+    A continuous time system's domain and codomain are both R, while for the discrete time system's
+    domain is a sampled domain (looking like D=(...x-1, x0, x1, x2...) where xn - xn-1 = delta for any n),
+    but the codomain is still R. Continuous time system: sound amplifier. Discrete time system: filtering of sensor data.
+
 (f) A continuous-time system is also called an analog system. Do you agree or disagree?
+
+    Analog systems are continuous time systems, but continuous time system aren't always analog systems.
+
 (g) Why do we need interface systems and where do we need them? Provide a block-diagram description of
 such systems needed in signal processing.
+
+    Interface systems are needed to convert signals from analog to digital or from digital to analog.
+    They're used is ADCs and DACs. We need them to convert real word data into digital data or vice versa.
+    image: 1 g).png
+
 (h) Describe an analog-to-digital (A/D) converter.
+
+    ADC takes a real time input, samples it's values and quantizes it resulting in a digital signal.
+
 (i) Describe a digital-to-analog (D/A) converter.
+
+    DAC takes digital values of a signal and reconstructs an approximation of the original analog signal.
+
 (j) What is the difference between a practical and an ideal A/D converter? Between a practical and ideal D/A
 converter?
+
+    An ideal ADC would convert a continuous time signal into a discrete time signal, but a practical one
+    converts analog signals into digital (quantized) signals. An ideal DAC would reconstruct a continuous time
+    signal perfectly, while a practical one can only output an analog signal with rigid steps.
+
 (k) What is signal processing and what are its different forms used in practice? Give one example of each form.
+
+    It is concerned with the acquisition, representation, manipulation and transformation of signals. It's forms
+    are analog and digital signal processing. ASP: manipulation of analog signals like electrical signals using
+    electric components. DSP: manipulation of discrete, digital signals using software algorithms. Mixed signal processing
+    is when we apply both. DSP: communication (Wi-Fi, 5G) is based on DSP. ASP: analog audio equalizer.
+
 (l) Describe analog signal processing (ASP) with the help of its simplified block diagram.
+
+    image: 1 l)m).png
+
 (m) Describe digital signal processing (DSP) with the help of its simplified block diagram.
+
+    image: 1 l)m).png
+
 (n) Why is DSP preferred over ASP? Are there any disadvantages?
+
+    DSP is preferred since it's easier to store bits (digital values) than analog ones.  Digital signals are easier to process,
+    since it's software reliant, changing it is a matter of changing code. However, changing how analog signals are
+    processed means changing hardware which is way more time-consuming and expensive. The disadvantages are that it has
+    limited resolution and can't produce the same level of detail. DSP also adds delay and has limitations with higher
+    frequencies that require more power to process.
