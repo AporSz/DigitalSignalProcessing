@@ -38,3 +38,22 @@ plt.plot(fftshift(t), fftshift(x))
 plt.plot(fftshift(tsamp), fftshift(xhat), '.')
 plt.show()
 
+
+# d
+fsamp = fftfreq(N // m, dt * m)
+
+plt.plot(fftshift(fsamp), np.real(fftshift(fft(xhat))) / fs * m, '.')
+plt.plot(fftshift(f), fftshift(X))
+plt.xlim(-10, 10)
+
+plt.show()
+
+Nsamp = N//m # size of the sampled signal (the same as len(xhat))
+xrec = np.zeros(len(t)) # the reconstructed signal ('continuous')
+for n in np.arange(-Nsamp//2, Nsamp//2):
+    xrec += xhat[n]*np.sinc(t/T - n)
+
+plt.plot(fftshift(t), fftshift(x))
+plt.plot(fftshift(t), fftshift(xrec), '.')
+
+plt.show()
