@@ -1,6 +1,6 @@
 from pylab import *
 
-import matplotlib.pyplot as plt
+import  matplotlib.pyplot as plt
 
 # def ditfft2(x):
 #     N = len(x)
