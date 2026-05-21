@@ -1,0 +1,7 @@
+3. What is an antialiasing filter? What is its role (benefits & limitations) ?
+
+An antialiasing filter is a low pass filter that removes undesired high frequencies that would otherwise lead to aliasing.
+This ensures the "peaks" of the Fourier transform don't overlap after sampling. The filter can remove information which can lead
+to minimal anomalies. (For example the rectangle function is infinite, and it's Fourier transform is the sinc function. Applying
+an antialiasing filter on it would lead to function that isn't a perfect sinc function, because we're cutting off infinite
+ripples of the sinc function.)

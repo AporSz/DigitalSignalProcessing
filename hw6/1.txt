@@ -1,0 +1,4 @@
+1. Describe the purpose of zero padding in FFT and how it affects frequency resolution.
+
+The fft algorithm prefers to have data points that are a power of two for efficiency, so we pad with zeros to achieve
+such a number of points. This does not increase the frequency resolution, but it makes the resulting function look smoother.

@@ -1,0 +1,4 @@
+2. Explain the changes observed in the FFT output when zero padding is applied to a signal
+
+The frequency resolution does not change since that only depends on the duration of the original signal, it does make
+the resulting function look smoother possibly revealing peaks lost to jaggedness.

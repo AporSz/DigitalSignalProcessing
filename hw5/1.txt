@@ -1,0 +1,8 @@
+1. Sketch diagrammatically the steps for sampling and reconstruction of a continuous signal. Explain it!
+
+original continuous signal -> antialiasing filter -> sampling -> reconstruction filter -> reconstructed signal
+
+We use an antialiasing filter to eliminate aliasing (overlapping peaks in the frequency domain). Then we sample which creates
+infinite copies of the Fourier transfrom of the signal (because of the Dirac comb) and we need to filter that with a reconstruction filter.
+We reconstruct the signal which won't be the original signal but the signal that has been filtered by the antialiasing filter.
+Both the antialiasing and reconstruction filters are low pass filters.

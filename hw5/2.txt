@@ -1,0 +1,5 @@
+2. What is the condition for a continuous signal to be reconstructible from its discrete time samples?
+
+For a continuous signal to be reconstructible from its discrete samples it needs to be bandlimited, and it needs to respect
+the Nyquist-Shannon sampling theorem. This means the sampling frequency needs to be higher than the Nyquist rate (double the
+highest frequency of the original signal).
