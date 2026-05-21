@@ -1,0 +1,56 @@
+2. Define poles and zeros in the context of the Laplace transform. How do they influence the behavior of a system?
+
+The system's behavior is described by its transfer function H(s) = N(s) / D(s). The zeros are the roots of N(s) and the poles are
+the roots of D(s). The poles determine the system's stability (if they are on the left side of the s plane then the system is stable,
+if they are on the right side the system is unstable, if the pole is on the imaginary axis then the system is marginally stable). Zeros
+can block specific frequencies, and they determine the amplitude and phase of the response.
+
+3. Discuss the significance of the pole-zero plot in analyzing the stability of a system.
+
+The poles determine the system's stability (if they are on the left side of the s plane then the system is stable,
+if they are on the right side the system is unstable, if the pole is on the imaginary axis then the system is marginally stable). Zeros
+can block specific frequencies, and they determine the amplitude and phase of the response. The plot visually reveals the system's stability.
+
+4. Explain why all-pole analogue filters can only be low-pass or band-pass.
+
+All pole filter: H(s) = K / ((s-p1) * (s-p2) * ... * (s-pn))
+As s approaches infinity, H(s) approaches 0. Thus an all pole filter will block high frequencies. It can't be a high pass filter.
+It can't be a notch filter either because it blocks high filters. It can be a band pass filter if the poles are close to the imaginary axis.
+
+5. What kind of filter does the transfer function H(s) = s / (s+1) represent? Argue it using words instead of calculations.
+
+It has a zero at 0 so it blocks low frequencies. The limit of H(s) is 1 as s tends to infinity, so it lets high frequencies pass.
+It is a high pass filter.
+
+6. What is a Bode plot, and how is it used to analyze continuous-time systems? What are the key components of a Bode plot?
+
+It plots, on a logarithmic axis, the frequencies against the system's gain (output magnitude / input magnitude) measured in deciBells.
+It also plots the frequencies (still logarithmic axis) against the phase in degrees.
+It is used to analyze filters and to tell easily what type of filter we're working with. It is also used for stability analysis and it can detect resonance too.
+
+7. Explain how to interpret the gain and phase plots in a Bode diagram.
+
+Gain plot: At 0 dB we have the baseline for the amplitude. Above 0 dB we have increase in gain, below it, we have decrease of gain. At -3 dB we have the cutoff frequency.
+The slope can tell us about how aggressive a filter is.
+Phase plot: 0 degrees: the output and input waves line up. Below 0 degrees we have lagging behind the input (poles cause phase lag). Above 0 degrees we have anticipation of
+input (zeros cause phase lead). At -180 degrees the output is inverted compared to the input.
+
+10. What is the z-transform, and how does it differ from the Fourier transform?
+
+It is the discrete time equivalent of the Laplace transform. The DTFT is a special case of z-transform: it's kernel function is z^(-n), where z = r * e ^ (j * omega).
+This allows the analys of divergent signals since the standard FT doesn't allow non-convergent signals.
+
+11. Explain the region of convergence (ROC) for the z-transform. Why is it important?
+
+The Region of Convergence (ROC) is the specific set of points in the complex $z$-plane where the z-transform summation mathematically converges to
+a finite value. It is crucial because a single algebraic expression can represent completely different time-domain signals depending entirely on its ROC.
+Furthermore, analyzing where the ROC sits relative to the unit circle instantly tells engineers whether a digital system is causal and stable.
+
+12. How does the z-transform of the convolution of two sequences relate to the individual z-transforms of the two sequences?
+
+The z-transform of the convolution of two discrete-time sequences is equal to the algebraic product of their individual z-transforms.
+This fundamental relationship, written as Z{x[n] * h[n]} = X(z)H(z), is the cornerstone of digital signal processing.
+It allows engineers to bypass complex time-domain convolution entirely, replacing it with basic algebraic multiplication in the frequency domain.
+
+
+

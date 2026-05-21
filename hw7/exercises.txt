@@ -51,3 +51,39 @@ It is used to solve the bias–variance trade-off. Overlap is used in Welch's me
 12. Why are windows applied before the FFT?
 
 Windows are applied before the FFT to prevent spectral leakage. They reduce sharp jumps at the ends of the slices.
+
+13. What is detrending and why is it used?
+
+Detrending is used to remove the DS offset, to remove the 0 Hz spike. To remove spectral leakage. To remove "trends" of the signal (for example a sensor slowly heating up). It is also needed
+for the signal to be stationary.
+
+14. What is zero padding? What does it change?
+
+The FFT works best with a number of samples that is a power of 2. By padding with zeros we can have smoother lines but not better frequency resolution.
+
+15. If segments have 300 samples, what FFT length is typically used and why?
+
+We would use 512 samples for the FFT. The first 300 would be the actual samples and the rest is just 0 padding to achieve a power of 2.
+
+17. Why must sampling frequency appear in PSD scaling?
+
+We scale by Fs because we need to divide the power by the physical width of the frequency bin to get a "density."
+
+18. What is meant by a one-sided spectrum? When is it a valid measure of the energy content of a signal?
+
+A one-sided spectrum means that we discard the negative frequencies of a signal. We double the positve frequencies' power. This is only valid for real signals.
+
+19. Explain the line below when normalizing a one-sided spectrum:
+FFTSlices[:, 1:-1] *= np.sqrt(2)
+
+We don't need to double the power of the 0 frequency. We don't need to double the power of the Niquist frequency either. But we double the power of the signal by
+multiplying with sqrt(2) because P = A^2
+
+25. Explain the Laplace transform and its kernel. Why is it widely used in mathematics, physics, and engineering?
+
+It is widely used because in the real world the signals must have a starting point they can't be infinite. The Laplace transforms
+considers that the signal starts at 0. Using the Laplace transform is way simpler since we have to do algebraic calculations instead of differential equations.
+It is also beneficial since we can plot the poles and zeros of the equation to see if the system is stable or not.
+
+The kernel function is: e^(-st) where s = sigma + j * omega
+e^(-sigma*t) corresponds to the amplitude whereas e^(-j*omega*t) corresponds to oscillations

@@ -1,0 +1,7 @@
+1. Explain the relationship between filters and linear time invariant systems.
+
+A filter is fundamentally a physical or mathematical implementation of a Linear Time-Invariant (LTI) system.
+By taking advantage of LTI properties, a filter predictably alters the amplitude and phase of specific frequencies in
+an input signal. Because filters are LTI systems, their exact behavior can be completely characterized by their impulse
+response in the time domain or their transfer function in the frequency domain.
+
