@@ -1,0 +1,53 @@
+2. Define the periodogram. Why is it a poor estimator?
+
+The periodogram P(omega) is defined as the normalized squared magnitude of the signal's Discrete-Time Fourier Transform (DTFT).
+It is not a consistent estimator since it doesn't approximate the true value as the sample size increases. It also causes spectral leakage.
+
+3. What are the benefits and side effects of slicing the signal when calculating the periodogram?
+
+Benefits: it reduces variance of the periodogram, and it smooths the PSD out.
+Side effects: it leads to loss in frequency resolution, and it increases windowing bias because the slices are shorter in time.
+
+4. Explain the bias–variance trade-off in spectral estimation.
+
+Since we can't analyze an infinite signal we have to choose our PSD plot to be either noisy or smooth but blurry.
+We solve the noisiness (high variance) by chopping the signal into smaller segments and averaging their PSD together. This
+results in a smoother curve.
+We solve the spectral leakage (the bias) by taking longer segments of time from the signal. This results in a sharper and more precise PSD.
+
+5. Describe the Welch method.
+
+The Welch's method is for estimating the PSD of a signal.
+It takes overlapping slices of the data (for example the first 50% of the data is the same as the last 50% of the data from the previous slice).
+After that, each slice is multiplied by a Hann or Hamming window. Then the FFT of each windowed segment is calculated, then the periodogram of the windows is averaged out.
+
+6. Why does Welch assume stationarity?
+
+Because the PSD is defined for stationary signals and because the Welch method is averaging periodograms together. If two slices have different frequencies in them,
+then the averaging out doesn't work anymore.
+
+7. Why does Welch reduce variance?
+
+It reduces variance because it is averaging overlapping slices of the data together.
+
+8. What is lost when using Welch instead of a single FFT?
+
+Frequency resolution is lost when using Welch. Since Welch is taking slices of the data, this means it will have less frequency resolution than the FFT.
+
+9. What is the effect of segment length?
+
+The length of the segment is determining the bias-variance trade-off. Meaning longer segments lead to sharper but noisier plots,
+but shorter segments lead to smoother plots with less frequency resolution.
+
+10. Why does averaging reduce variance but not bias?
+
+Variance is random error coming from the signal. Averaging smooths the plot out. But bias is error coming from the method itself. It is due to spectral leakage and
+loss of resolution since this is coming from the length of the segments in our method.
+
+11. Why is overlap used in Welch?
+
+It is used to solve the bias–variance trade-off. Overlap is used in Welch's method to reduce variance and recover lost data.
+
+12. Why are windows applied before the FFT?
+
+Windows are applied before the FFT to prevent spectral leakage. They reduce sharp jumps at the ends of the slices.
