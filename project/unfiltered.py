@@ -1,6 +1,7 @@
 import numpy as np
+import matplotlib.pyplot as plt
 
-def load(path, limit = 10000):
+def load(path, limit = 100000):
     data = {
         "time": [],
         "pressure_top" : [],
@@ -60,4 +61,13 @@ def load(path, limit = 10000):
         return data
 
 data = load('data/1_CO2_raw_data/new_device_column1.txt')
-print(data)
+
+for i in range(0, 40):
+    plt.plot(data["time"], data["co2_main"][i], label="co2")
+
+plt.show()
+
+for i in range(0, 8):
+    plt.plot(data["time"], data["co2_side"][i], label="co2")
+
+plt.show()
