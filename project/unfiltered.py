@@ -1,6 +1,6 @@
 import numpy as np
 
-def load(path):
+def load(path, limit = 10000):
     data = {
         "time": [],
         "pressure_top" : [],
@@ -12,8 +12,16 @@ def load(path):
         "co2_main" : [],
         "co2_side" : [],
     }
+
+    for i in range(6, 6 + 40):
+        data["co2_main"].append([])
+
+    for i in range(6 + 40, 6 + 40 + 8):
+        data["co2_side"].append([])
+
+    index = 0
     with open(path) as f:
-        while not f.closed:
+        while not f.closed and index < limit:
             try:
                 line = f.readline()
                 l = line.strip().split()
@@ -38,11 +46,13 @@ def load(path):
 
                 for i in range(6, 6 + 40):
                     co2 = float(l[i])
-                    data["co2_main"].append(co2)
+                    data["co2_main"][i - 6].append(co2)
 
                 for i in range(6 + 40, 6 + 40 + 8):
                     c02 = float(l[i])
-                    data["co2_side"].append(c02)
+                    data["co2_side"][i - 40 -6].append(c02)
+
+                index += 1
             except Exception as e:
                 # print(e)
                 continue
