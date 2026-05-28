@@ -1,13 +1,23 @@
 import csv
-
 import numpy as np
 import matplotlib.pyplot as plt
 
+#CSV header: Timestamp,Pressure_Top,Humidity_Top,Temperature_Top,Pressure_Bottom,Humidity_Bottom,Temperature_Bottom,CO2_main1,Temperature_main1,CO2_main2,Temperature_main2,CO2_main3,Temperature_main3,CO2_main4,Temperature_main4,CO2_main5,Temperature_main5,CO2_main6,Temperature_main6,CO2_main7,Temperature_main7,CO2_main8,Temperature_main8,CO2_main9,Temperature_main9,CO2_main10,Temperature_main10,CO2_main11,Temperature_main11,CO2_main12,Temperature_main12,CO2_main13,Temperature_main13,CO2_main14,Temperature_main14,CO2_main15,Temperature_main15,CO2_main16,Temperature_main16,CO2_main17,Temperature_main17,CO2_main18,Temperature_main18,CO2_main19,Temperature_main19,CO2_main20,Temperature_main20,CO2_side1,Temperature_side1,CO2_side2,Temperature_side2,CO2_side3,Temperature_side3,CO2_side4,Temperature_side4
 def convert_to_csv(path_txt, path_csv):
     with open(path_txt) as f:
+        index = 0
+        invalid = 0
+        line = None
         while not f.closed:
+            if index % 1000000 == 0:
+                print("1 million processed")
+
             try:
                 line = f.readline()
+
+                if line == "":
+                    raise EOFError("Finished reading the file")
+
                 l = line.strip().split()
                 t = float(l[0])
 
@@ -20,24 +30,56 @@ def convert_to_csv(path_txt, path_csv):
 
                 pressure_bottom, humidity_bottom, temperature_bottom = float(l[3]), float(l[4]), float(l[5])
 
-                co2_main, co2_side = [], []
+                co2_main, co2_side, temperature_main, temperature_side = [], [], [], []
 
-                for i in range(6, 6 + 40):
-                    co2_main.append(float(l[i]))
+                for i in range(3, 3 + 20):
+                    co2 = float(l[2 * i])
+                    temperature = float(l[2 * i + 1])
+                    co2_main.append(co2)
+                    temperature_main.append(temperature)
 
-                for i in range(6 + 40, 6 + 40 + 8):
-                    co2_side.append(float(l[i]))
+                for i in range(3 + 20, 3 + 20 + 4):
+                    c02 = float(l[2 * i])
+                    temperature = float(l[2 * i + 1])
+                    co2_side.append(c02)
+                    temperature_side.append(temperature)
+
+                sensors_main, sensors_side = [], []
+
+                for i in range(20):
+                    sensors_main.append(co2_main[i])
+                    sensors_main.append(temperature_main[i])
+
+                for i in range(4):
+                    sensors_side.append(co2_side[i])
+                    sensors_side.append(temperature_side[i])
 
                 with open(path_csv, "a") as csvfile:
                     writer = csv.writer(csvfile)
 
-                    writer.writerow([t, pressure_top, humidity_top, temperature_top, pressure_bottom, humidity_bottom, temperature_bottom] + co2_main + co2_side)
+                    writer.writerow([t, pressure_top, humidity_top, temperature_top, pressure_bottom, humidity_bottom, temperature_bottom] + sensors_main + sensors_side)
+
+            except IndexError as e:
+                print(e)
+                invalid += 1
+
+            except ValueError as e:
+                # print(e)
+                invalid += 1
+                # print(line)
+
+            except EOFError as e:
+                f.close()
 
             except Exception as e:
-                # print(e)
-                continue
+                print(e.__class__)
 
-def load(path, limit = 100000):
+            index += 1
+
+        print("DONE")
+        print(f"Number of invalid entries: {invalid} out of {index}")
+
+def load(path, limit = 1000000):
     data = {
         "time": [],
         "pressure_top" : [],
@@ -104,24 +146,27 @@ def load(path, limit = 100000):
 
         return data
 
-data = load('data/1_CO2_raw_data/new_device_column1.txt')
+# data = load('data/1_CO2_raw_data/new_device_column1.txt')
+#
+# for i in range(0, 20):
+#     plt.plot(data["time"], data["co2_main"][i], label="co2")
+#
+# plt.show()
+#
+# for i in range(0, 4):
+#     plt.plot(data["time"], data["co2_side"][i], label="co2")
+#
+# plt.show()
+#
+# for i in range(0, 20):
+#     plt.plot(data["time"], data["temperature_main"][i], label="co2")
+#
+# plt.show()
+#
+# for i in range(0, 4):
+#     plt.plot(data["time"], data["temperature_side"][i], label="co2")
+#
+# plt.show()
 
-for i in range(0, 20):
-    plt.plot(data["time"], data["co2_main"][i], label="co2")
-
-plt.show()
-
-for i in range(0, 4):
-    plt.plot(data["time"], data["co2_side"][i], label="co2")
-
-plt.show()
-
-for i in range(0, 20):
-    plt.plot(data["time"], data["temperature_main"][i], label="co2")
-
-plt.show()
-
-for i in range(0, 4):
-    plt.plot(data["time"], data["temperature_side"][i], label="co2")
-
-plt.show()
+convert_to_csv('data/1_CO2_raw_data/new_device_column1.txt', 'data/1_CO2_raw_data/data.csv')
+# convert_to_csv('data/1_CO2_raw_data/chunk_00.txt', 'data/1_CO2_raw_data/data.csv')
