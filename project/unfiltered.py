@@ -115,3 +115,13 @@ for i in range(0, 4):
     plt.plot(data["time"], data["co2_side"][i], label="co2")
 
 plt.show()
+
+for i in range(0, 20):
+    plt.plot(data["time"], data["temperature_main"][i], label="co2")
+
+plt.show()
+
+for i in range(0, 4):
+    plt.plot(data["time"], data["temperature_side"][i], label="co2")
+
+plt.show()
