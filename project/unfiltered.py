@@ -140,9 +140,19 @@ def load(path, limit = 1000000):
                     data["temperature_side"][i - 20 - 3].append(temperature)
 
                 index += 1
-            except Exception as e:
+
+            except IndexError as e:
+                print(e)
+
+            except ValueError as e:
                 # print(e)
-                continue
+                pass
+
+            except EOFError as e:
+                f.close()
+
+            except Exception as e:
+                print(e.__class__)
 
         return data
 
