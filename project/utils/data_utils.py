@@ -82,7 +82,7 @@ def convert_txt_to_csv(path_txt, path_csv):
         print(f"Number of invalid entries: {invalid} out of {index}")
 
 def convert_csv_to_bin(path_csv, path_bin):
-    with open(path_csv) as csvfile:
+    with open(path_csv, 'r') as csvfile:
         with open(path_bin, "wb") as binary_file:
             reader = csv.DictReader(csvfile, delimiter=',')
 
@@ -125,6 +125,57 @@ def convert_csv_to_bin(path_csv, path_bin):
                 index += 1
 
     print("DONE")
+
+#data from csv file
+def get_data_by_minute(path):
+    data = {
+        "Timestamp": [],
+        "Pressure_Top": [],
+        "Humidity_Top": [],
+        "Temperature_Top": [],
+        "Pressure_Bottom": [],
+        "Humidity_Bottom": [],
+        "Temperature_Bottom": [],
+        "CO2_main": [],
+        "Temperature_main": [],
+        "CO2_side": [],
+        "Temperature_side": [],
+    }
+
+    for i in range(3, 3 + 20):
+        data["CO2_main"].append([])
+        data["Temperature_main"].append([])
+
+    for i in range(3 + 20, 3 + 20 + 4):
+        data["CO2_side"].append([])
+        data["Temperature_side"].append([])
+
+    with open(path, 'r') as csvfile:
+        reader = csv.DictReader(csvfile, delimiter=',')
+
+        for index, row in enumerate(reader):
+            if index % 60 == 0:
+                data["Timestamp"].append(float(row["Timestamp"]))
+                data["Pressure_Top"].append(float(row["Pressure_Top"]))
+                data["Humidity_Top"].append(float(row["Humidity_Top"]))
+                data["Temperature_Top"].append(float(row["Temperature_Top"]))
+                data["Pressure_Bottom"].append(float(row["Pressure_Bottom"]))
+                data["Humidity_Bottom"].append(float(row["Humidity_Bottom"]))
+                data["Temperature_Bottom"].append(float(row["Temperature_Bottom"]))
+
+                co2_main = []
+                temperature_main = []
+                for i in range(1, 21):
+                    data["CO2_main"][i - 1].append(float(row["CO2_main" + str(i)]))
+                    data["Temperature_main"][i - 1].append(float(row["Temperature_main" + str(i)]))
+
+                co2_side = []
+                temperature_side = []
+                for i in range(1, 5):
+                    data["CO2_side"][i - 1].append(float(row["CO2_side" + str(i)]))
+                    data["Temperature_side"][i - 1].append(float(row["Temperature_side" + str(i)]))
+
+    return data
 
 def load(path, limit = 100000):
     data = {
@@ -206,4 +257,4 @@ def load(path, limit = 100000):
 # convert_txt_to_csv('data/1_CO2_raw_data/new_device_column1.txt', 'data/1_CO2_raw_data/data.csv')
 # convert_txt_to_csv('data/1_CO2_raw_data/chunk_00.txt', 'data/1_CO2_raw_data/data.csv')
 
-convert_csv_to_bin('data/1_CO2_raw_data/data.csv', 'data/1_CO2_raw_data/data.bin')
+# convert_csv_to_bin('../data/1_CO2_raw_data/data.csv', '../data/1_CO2_raw_data/data.bin')

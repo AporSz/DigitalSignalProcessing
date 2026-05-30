@@ -2,14 +2,17 @@ import matplotlib
 import matplotlib.pyplot as plt
 
 from project.utils.plot_utils import plot_sensor
-from project.utils.data_utils import load
+from project.utils.data_utils import load, get_data_by_minute
 
 matplotlib.use('TkAgg')
 
 N = 100000
 
-sensor_values = load('data/1_CO2_raw_data/new_device_column1.txt', limit = N)
+# sensor_values = load('data/1_CO2_raw_data/new_device_column1.txt', limit = N)
+sensor_values = get_data_by_minute('data/1_CO2_raw_data/data.csv')
 
-plot_sensor(sensor_values,"CO2_main", filtered = False, mark_days = True)
+time = sensor_values["Timestamp"]
+
+plot_sensor(sensor_values, time, "Temperature_main", filtered = False, mark_period = "Month")
 
 plt.show()
