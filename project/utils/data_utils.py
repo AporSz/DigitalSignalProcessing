@@ -83,7 +83,7 @@ def convert_txt_to_csv(path_txt, path_csv):
 
 def convert_csv_to_bin(path_csv, path_bin):
     with open(path_csv) as csvfile:
-        with open(path_bin, "ab") as binary_file:
+        with open(path_bin, "wb") as binary_file:
             reader = csv.DictReader(csvfile, delimiter=',')
 
             index = 0
