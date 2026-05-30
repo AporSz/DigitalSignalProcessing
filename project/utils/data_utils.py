@@ -123,26 +123,26 @@ def convert_csv_to_bin(path_csv, path_bin):
 
 def load(path, limit = 100000):
     data = {
-        "time": [],
-        "pressure_top" : [],
-        "humidity_top" : [],
-        "temperature_top" : [],
-        "pressure_bottom" : [],
-        "humidity_bottom" : [],
-        "temperature_bottom" : [],
-        "co2_main" : [],
-        "temperature_main" : [],
-        "co2_side" : [],
-        "temperature_side" : [],
+        "Timestamp": [],
+        "Pressure_Top" : [],
+        "Humidity_Top" : [],
+        "Temperature_Top" : [],
+        "Pressure_Bottom" : [],
+        "Humidity_Bottom" : [],
+        "Temperature_Bottom" : [],
+        "CO2_main" : [],
+        "Temperature_main" : [],
+        "CO2_side" : [],
+        "Temperature_side" : [],
     }
 
     for i in range(3, 3 + 20):
-        data["co2_main"].append([])
-        data["temperature_main"].append([])
+        data["CO2_main"].append([])
+        data["Temperature_main"].append([])
 
     for i in range(3 + 20, 3 + 20 + 4):
-        data["co2_side"].append([])
-        data["temperature_side"].append([])
+        data["CO2_side"].append([])
+        data["Temperature_side"].append([])
 
     index = 0
     with open(path) as f:
@@ -157,29 +157,29 @@ def load(path, limit = 100000):
                 if len(l) <= 2:
                     raise ValueError("Line not containing enough data")
 
-                data["time"].append(t)
+                data["Timestamp"].append(t)
 
                 pressure, humidity, temperature = float(l[0]), float(l[1]), float(l[2])
-                data["pressure_top"].append(pressure)
-                data["humidity_top"].append(humidity)
-                data["temperature_top"].append(temperature)
+                data["Pressure_Top"].append(pressure)
+                data["Humidity_Top"].append(humidity)
+                data["Temperature_Top"].append(temperature)
 
                 pressure, humidity, temperature = float(l[3]), float(l[4]), float(l[5])
-                data["pressure_bottom"].append(pressure)
-                data["humidity_bottom"].append(humidity)
-                data["temperature_bottom"].append(temperature)
+                data["Pressure_Bottom"].append(pressure)
+                data["Humidity_Bottom"].append(humidity)
+                data["Temperature_Bottom"].append(temperature)
 
                 for i in range(3, 3 + 20):
                     co2 = float(l[2 * i])
                     temperature = float(l[2 * i + 1])
-                    data["co2_main"][i - 3].append(co2)
-                    data["temperature_main"][i - 3].append(temperature)
+                    data["CO2_main"][i - 3].append(co2)
+                    data["Temperature_main"][i - 3].append(temperature)
 
                 for i in range(3 + 20, 3 + 20 + 4):
                     c02 = float(l[2 * i])
                     temperature = float(l[2 * i + 1])
-                    data["co2_side"][i - 20 - 3].append(c02)
-                    data["temperature_side"][i - 20 - 3].append(temperature)
+                    data["CO2_side"][i - 20 - 3].append(c02)
+                    data["Temperature_side"][i - 20 - 3].append(temperature)
 
                 index += 1
 
