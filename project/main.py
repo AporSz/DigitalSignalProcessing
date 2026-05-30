@@ -6,10 +6,10 @@ from project.utils.data_utils import load
 
 matplotlib.use('TkAgg')
 
-N = 10000000
+N = 100000
 
 sensor_values = load('data/1_CO2_raw_data/new_device_column1.txt', limit = N)
 
-plot_sensor(sensor_values,"co2_main", filtered = True, mark_days = True)
+plot_sensor(sensor_values,"CO2_main", filtered = False, mark_days = True)
 
 plt.show()
