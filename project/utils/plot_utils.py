@@ -1,11 +1,8 @@
-import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
 from scipy.signal import savgol_filter
 
-from project.utils.utils import load
-
-matplotlib.use('TkAgg')
+from project.utils.data_utils import load
 
 def plot_filtered(time, values, color):
     smoothed = savgol_filter(values, 51, 3)
@@ -14,8 +11,8 @@ def plot_filtered(time, values, color):
 def add_vertical_line(data, sensor):
     ymin = np.array(data[sensor]).flatten().min()
     ymax = np.array(data[sensor]).flatten().max()
-    xmin = np.array(data["time"]).flatten().min()
-    xmax = np.array(data["time"]).flatten().max()
+    xmin = np.array(data["Timestamp"]).flatten().min()
+    xmax = np.array(data["Timestamp"]).flatten().max()
     vertical_lines = np.arange(xmin, xmax)[::86400]
     plt.vlines(vertical_lines, ymin=ymin, ymax=ymax, colors='grey')
 
@@ -25,9 +22,9 @@ def plot_sensor(data, sensor, filtered = False, mark_days = False, color = "blue
 
     if np.array(data[sensor]).shape.__len__() == 1:
         if filtered:
-            plot_filtered(data["time"], data[sensor], color = color)
+            plot_filtered(data["Timestamp"], data[sensor], color = color)
         else:
-            plt.plot(data["time"], data[sensor], color = color)
+            plt.plot(data["Timestamp"], data[sensor], color = color)
 
         return
 
@@ -36,14 +33,6 @@ def plot_sensor(data, sensor, filtered = False, mark_days = False, color = "blue
 
     for i in range(len(data[sensor])):
         if filtered:
-            plot_filtered(data["time"], data[sensor][i], color = colors[i])
+            plot_filtered(data["Timestamp"], data[sensor][i], color = colors[i])
         else:
-            plt.plot(data["time"], data[sensor][i], color = colors[i])
-
-N = 1000000
-
-sensor_values = load('data/1_CO2_raw_data/new_device_column1.txt', limit = N)
-
-plot_sensor(sensor_values,"co2_main", filtered = True, mark_days = True)
-
-plt.show()
+            plt.plot(data["Timestamp"], data[sensor][i], color = colors[i])
