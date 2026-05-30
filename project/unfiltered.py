@@ -1,9 +1,13 @@
 import csv
+
+import matplotlib
 import numpy as np
 import matplotlib.pyplot as plt
 
+matplotlib.use('TkAgg')
+
 #CSV header: Timestamp,Pressure_Top,Humidity_Top,Temperature_Top,Pressure_Bottom,Humidity_Bottom,Temperature_Bottom,CO2_main1,Temperature_main1,CO2_main2,Temperature_main2,CO2_main3,Temperature_main3,CO2_main4,Temperature_main4,CO2_main5,Temperature_main5,CO2_main6,Temperature_main6,CO2_main7,Temperature_main7,CO2_main8,Temperature_main8,CO2_main9,Temperature_main9,CO2_main10,Temperature_main10,CO2_main11,Temperature_main11,CO2_main12,Temperature_main12,CO2_main13,Temperature_main13,CO2_main14,Temperature_main14,CO2_main15,Temperature_main15,CO2_main16,Temperature_main16,CO2_main17,Temperature_main17,CO2_main18,Temperature_main18,CO2_main19,Temperature_main19,CO2_main20,Temperature_main20,CO2_side1,Temperature_side1,CO2_side2,Temperature_side2,CO2_side3,Temperature_side3,CO2_side4,Temperature_side4
-def convert_to_csv(path_txt, path_csv):
+def convert_txt_to_csv(path_txt, path_csv):
     with open(path_txt) as f:
         index = 0
         invalid = 0
@@ -79,7 +83,50 @@ def convert_to_csv(path_txt, path_csv):
         print("DONE")
         print(f"Number of invalid entries: {invalid} out of {index}")
 
-def load(path, limit = 1000000):
+def convert_csv_to_bin(path_csv, path_bin):
+    with open(path_csv) as csvfile:
+        reader = csv.DictReader(csvfile, delimiter=',')
+
+        index = 0
+
+        for row in reader:
+            if index % 1000000 == 0:
+                print("1 million processed")
+
+            time = float(row["Timestamp"])
+            pressure_top = float(row["Pressure_Top"])
+            humidity_top = float(row["Humidity_Top"])
+            temperature_top = float(row["Temperature_Top"])
+            pressure_bottom = float(row["Pressure_Bottom"])
+            humidity_bottom = float(row["Humidity_Bottom"])
+            temperature_bottom = float(row["Temperature_Bottom"])
+            co2_main = []
+            temperature_main = []
+            for i in range(1, 21):
+                co2_main.append(float(row["CO2_main" + str(i)]))
+                temperature_main.append(float(row["Temperature_main" + str(i)]))
+
+            co2_side = []
+            temperature_side = []
+            for i in range(1, 5):
+                co2_side.append(float(row["CO2_side" + str(i)]))
+                temperature_side.append(float(row["Temperature_side" + str(i)]))
+
+            with open(path_bin, "wb") as binary_file:
+                arr = [time, pressure_top, humidity_top, temperature_top, pressure_bottom, humidity_bottom, temperature_bottom]
+                arr += co2_main
+                arr += temperature_main
+                arr += co2_side
+                arr += temperature_side
+
+                byte_array = np.array(arr).tobytes()
+                binary_file.write(byte_array)
+
+            index += 1
+
+        print("DONE")
+
+def load(path, limit = 100000):
     data = {
         "time": [],
         "pressure_top" : [],
@@ -178,5 +225,7 @@ def load(path, limit = 1000000):
 #
 # plt.show()
 
-convert_to_csv('data/1_CO2_raw_data/new_device_column1.txt', 'data/1_CO2_raw_data/data.csv')
-# convert_to_csv('data/1_CO2_raw_data/chunk_00.txt', 'data/1_CO2_raw_data/data.csv')
+# convert_txt_to_csv('data/1_CO2_raw_data/new_device_column1.txt', 'data/1_CO2_raw_data/data.csv')
+# convert_txt_to_csv('data/1_CO2_raw_data/chunk_00.txt', 'data/1_CO2_raw_data/data.csv')
+
+convert_csv_to_bin('data/1_CO2_raw_data/data.csv', 'data/1_CO2_raw_data/data.bin')
