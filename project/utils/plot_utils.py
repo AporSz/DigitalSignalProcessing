@@ -8,23 +8,30 @@ def plot_filtered(time, values, color):
     smoothed = savgol_filter(values, 51, 3)
     plt.plot(time, smoothed, color = color)
 
-def add_vertical_line(data, sensor):
+def add_vertical_line(data, time, sensor, period):
     ymin = np.array(data[sensor]).flatten().min()
     ymax = np.array(data[sensor]).flatten().max()
-    xmin = np.array(data["Timestamp"]).flatten().min()
-    xmax = np.array(data["Timestamp"]).flatten().max()
-    vertical_lines = np.arange(xmin, xmax)[::86400]
+    xmin = np.array(time).flatten().min()
+    xmax = np.array(time).flatten().max()
+    if period == "Day":
+        vertical_lines = np.arange(xmin, xmax)[::86400]
+    elif period == "Week":
+        vertical_lines = np.arange(xmin, xmax)[::86400 * 7]
+    elif period == "Month":
+        vertical_lines = np.arange(xmin, xmax)[::86400 * 30]
+    else:
+        return
     plt.vlines(vertical_lines, ymin=ymin, ymax=ymax, colors='grey')
 
-def plot_sensor(data, sensor, filtered = False, mark_days = False, color = "blue"):
-    if mark_days:
-        add_vertical_line(data, sensor)
+def plot_sensor(data, time, sensor, filtered = False, mark_period = None, color = "blue"):
+    if mark_period is not None:
+        add_vertical_line(data, time, sensor, mark_period)
 
     if np.array(data[sensor]).shape.__len__() == 1:
         if filtered:
-            plot_filtered(data["Timestamp"], data[sensor], color = color)
+            plot_filtered(time, data[sensor], color = color)
         else:
-            plt.plot(data["Timestamp"], data[sensor], color = color)
+            plt.plot(time, data[sensor], color = color)
 
         return
 
@@ -33,6 +40,6 @@ def plot_sensor(data, sensor, filtered = False, mark_days = False, color = "blue
 
     for i in range(len(data[sensor])):
         if filtered:
-            plot_filtered(data["Timestamp"], data[sensor][i], color = colors[i])
+            plot_filtered(time, data[sensor][i], color = colors[i])
         else:
-            plt.plot(data["Timestamp"], data[sensor][i], color = colors[i])
+            plt.plot(time, data[sensor][i], color = colors[i])
