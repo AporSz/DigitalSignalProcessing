@@ -112,7 +112,7 @@ def convert_csv_to_bin(path_csv, path_bin):
                 co2_side.append(float(row["CO2_side" + str(i)]))
                 temperature_side.append(float(row["Temperature_side" + str(i)]))
 
-            with open(path_bin, "wb") as binary_file:
+            with open(path_bin, "ab") as binary_file:
                 arr = [time, pressure_top, humidity_top, temperature_top, pressure_bottom, humidity_bottom, temperature_bottom]
                 arr += co2_main
                 arr += temperature_main
