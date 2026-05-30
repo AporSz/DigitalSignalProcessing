@@ -206,4 +206,4 @@ def load(path, limit = 100000):
 # convert_txt_to_csv('data/1_CO2_raw_data/new_device_column1.txt', 'data/1_CO2_raw_data/data.csv')
 # convert_txt_to_csv('data/1_CO2_raw_data/chunk_00.txt', 'data/1_CO2_raw_data/data.csv')
 
-# convert_csv_to_bin('data/1_CO2_raw_data/data.csv', 'data/1_CO2_raw_data/data.bin')
+convert_csv_to_bin('data/1_CO2_raw_data/data.csv', 'data/1_CO2_raw_data/data.bin')
