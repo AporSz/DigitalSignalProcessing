@@ -163,6 +163,52 @@ def get_data_by_minute(path):
                 data["Humidity_Bottom"].append(float(row["Humidity_Bottom"]))
                 data["Temperature_Bottom"].append(float(row["Temperature_Bottom"]))
 
+                for i in range(1, 21):
+                    data["CO2_main"][i - 1].append(float(row["CO2_main" + str(i)]))
+                    data["Temperature_main"][i - 1].append(float(row["Temperature_main" + str(i)]))
+
+                for i in range(1, 5):
+                    data["CO2_side"][i - 1].append(float(row["CO2_side" + str(i)]))
+                    data["Temperature_side"][i - 1].append(float(row["Temperature_side" + str(i)]))
+
+    return data
+
+def load_csv(path, limit = 100000):
+    data = {
+        "Timestamp": [],
+        "Pressure_Top": [],
+        "Humidity_Top": [],
+        "Temperature_Top": [],
+        "Pressure_Bottom": [],
+        "Humidity_Bottom": [],
+        "Temperature_Bottom": [],
+        "CO2_main": [],
+        "Temperature_main": [],
+        "CO2_side": [],
+        "Temperature_side": [],
+    }
+
+    for i in range(3, 3 + 20):
+        data["CO2_main"].append([])
+        data["Temperature_main"].append([])
+
+    for i in range(3 + 20, 3 + 20 + 4):
+        data["CO2_side"].append([])
+        data["Temperature_side"].append([])
+
+    with open(path, 'r') as csvfile:
+        reader = csv.DictReader(csvfile, delimiter=',')
+
+        for index, row in enumerate(reader):
+            if index < limit:
+                data["Timestamp"].append(float(row["Timestamp"]))
+                data["Pressure_Top"].append(float(row["Pressure_Top"]))
+                data["Humidity_Top"].append(float(row["Humidity_Top"]))
+                data["Temperature_Top"].append(float(row["Temperature_Top"]))
+                data["Pressure_Bottom"].append(float(row["Pressure_Bottom"]))
+                data["Humidity_Bottom"].append(float(row["Humidity_Bottom"]))
+                data["Temperature_Bottom"].append(float(row["Temperature_Bottom"]))
+
                 co2_main = []
                 temperature_main = []
                 for i in range(1, 21):
@@ -174,6 +220,8 @@ def get_data_by_minute(path):
                 for i in range(1, 5):
                     data["CO2_side"][i - 1].append(float(row["CO2_side" + str(i)]))
                     data["Temperature_side"][i - 1].append(float(row["Temperature_side" + str(i)]))
+            else:
+                return data
 
     return data
 
