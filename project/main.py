@@ -13,6 +13,6 @@ sensor_values = get_data_by_minute('data/1_CO2_raw_data/data.csv')
 
 time = sensor_values["Timestamp"]
 
-plot_sensor(sensor_values, time, "Temperature_main", filtered = False, mark_period = "Month")
+plot_sensor(sensor_values, time, "CO2_main", filtered = False, mark_period = "Month")
 
 plt.show()
