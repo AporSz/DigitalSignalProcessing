@@ -209,14 +209,10 @@ def load_csv(path, limit = 100000):
                 data["Humidity_Bottom"].append(float(row["Humidity_Bottom"]))
                 data["Temperature_Bottom"].append(float(row["Temperature_Bottom"]))
 
-                co2_main = []
-                temperature_main = []
                 for i in range(1, 21):
                     data["CO2_main"][i - 1].append(float(row["CO2_main" + str(i)]))
                     data["Temperature_main"][i - 1].append(float(row["Temperature_main" + str(i)]))
 
-                co2_side = []
-                temperature_side = []
                 for i in range(1, 5):
                     data["CO2_side"][i - 1].append(float(row["CO2_side" + str(i)]))
                     data["Temperature_side"][i - 1].append(float(row["Temperature_side" + str(i)]))
