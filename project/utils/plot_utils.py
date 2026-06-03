@@ -50,12 +50,15 @@ def plot_sensor(data, time, sensor, filtered = False, mark_period = None, color 
 
     plt.show()
 
-def plot_correlation(data, sensor1, sensor2, index1=0, index2=0):
+def plot_correlation(data, sensor1, sensor2, index1= -1, index2= -1):
     # Safely extract x data
     d1 = np.array(data[sensor1])
     if d1.ndim == 2:
         x = d1[index1]
-        label1 = f"{sensor1}_{index1+1}"
+        if index1 != -1:
+            label1 = f"{sensor1}_{index1}"
+        else:
+            label1 = sensor1
     else:
         x = d1
         label1 = sensor1
@@ -64,14 +67,17 @@ def plot_correlation(data, sensor1, sensor2, index1=0, index2=0):
     d2 = np.array(data[sensor2])
     if d2.ndim == 2:
         y = d2[index2]
-        label2 = f"{sensor2}_{index2+1}"
+        if index2 != -1:
+            label2 = f"{sensor2}_{index2}"
+        else:
+            label2 = sensor2
     else:
         y = d2
         label2 = sensor2
 
     r_value = np.corrcoef(x, y)[0, 1]
 
-    plt.figure(figsize=(7, 5))
+    # plt.figure(figsize=(7, 5))
     
     # 1. Create the hexbin map (better for lots of data points)
     plt.hexbin(x, y, gridsize=50, cmap='Blues', mincnt=1)
