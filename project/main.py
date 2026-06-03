@@ -16,5 +16,5 @@ time = sensor_values["Timestamp"]
 
 # plot_sensor(sensor_values, time, "CO2_main", filtered = False, mark_period = "Month")
 
-plot_correlation(sensor_values, "Pressure_Top", "Humidity_Top")
-correlation_matrix(sensor_values, ["Pressure_Top", "Humidity_Top", "Temperature_Top", "Pressure_Bottom", "Humidity_Bottom", "Temperature_Bottom"])
+plot_correlation(sensor_values, "Temperature_main", "Temperature_side")
+correlation_matrix(sensor_values, ["Temperature_main", "Temperature_side"])
