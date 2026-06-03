@@ -193,7 +193,7 @@ def get_data_by_minute(path):
         data["Temperature_side"].append([])
 
     with open(path, 'r') as csvfile:
-        reader = csv.DictReader(csvfile, delimiter=',')
+        reader = _csv_dict_reader(csvfile)
 
         for index, row in enumerate(reader):
             if index % 60 == 0:
@@ -239,7 +239,7 @@ def load_csv(path, limit = 100000):
         data["Temperature_side"].append([])
 
     with open(path, 'r') as csvfile:
-        reader = csv.DictReader(csvfile, delimiter=',')
+        reader = _csv_dict_reader(csvfile)
 
         for index, row in enumerate(reader):
             if index < limit:
