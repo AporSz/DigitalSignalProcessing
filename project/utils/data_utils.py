@@ -1,7 +1,44 @@
+import csv
+import os
+
+import numpy as np
 import numpy as np
 import csv
 
 from numpy import dtype
+
+
+CSV_FIELDNAMES = (
+    ["Timestamp", "Pressure_Top", "Humidity_Top", "Temperature_Top", "Pressure_Bottom", "Humidity_Bottom", "Temperature_Bottom"]
+    + [name for i in range(1, 21) for name in (f"CO2_main{i}", f"Temperature_main{i}")]
+    + [name for i in range(1, 5) for name in (f"CO2_side{i}", f"Temperature_side{i}")]
+)
+
+
+def _csv_dict_reader(csvfile):
+    """Read project CSV with or without a header row; skip blank lines."""
+    start = csvfile.tell()
+    first_line = csvfile.readline()
+    csvfile.seek(start)
+
+    if not first_line.strip():
+        csvfile.readline()
+
+    first_cell = first_line.split(",")[0].strip()
+    if first_cell == "Timestamp":
+        reader = csv.DictReader(csvfile, delimiter=",")
+    else:
+        reader = csv.DictReader(csvfile, fieldnames=CSV_FIELDNAMES, delimiter=",")
+
+    for row in reader:
+        timestamp = (row.get("Timestamp") or "").strip()
+        if not timestamp or timestamp == "Timestamp":
+            continue
+        try:
+            float(timestamp)
+        except ValueError:
+            continue
+        yield row
 
 
 #CSV header: Timestamp,Pressure_Top,Humidity_Top,Temperature_Top,Pressure_Bottom,Humidity_Bottom,Temperature_Bottom,CO2_main1,Temperature_main1,CO2_main2,Temperature_main2,CO2_main3,Temperature_main3,CO2_main4,Temperature_main4,CO2_main5,Temperature_main5,CO2_main6,Temperature_main6,CO2_main7,Temperature_main7,CO2_main8,Temperature_main8,CO2_main9,Temperature_main9,CO2_main10,Temperature_main10,CO2_main11,Temperature_main11,CO2_main12,Temperature_main12,CO2_main13,Temperature_main13,CO2_main14,Temperature_main14,CO2_main15,Temperature_main15,CO2_main16,Temperature_main16,CO2_main17,Temperature_main17,CO2_main18,Temperature_main18,CO2_main19,Temperature_main19,CO2_main20,Temperature_main20,CO2_side1,Temperature_side1,CO2_side2,Temperature_side2,CO2_side3,Temperature_side3,CO2_side4,Temperature_side4
@@ -56,6 +93,11 @@ def convert_txt_to_csv(path_txt, path_csv):
                     sensors_side.append(co2_side[i])
                     sensors_side.append(temperature_side[i])
 
+                write_header = not os.path.exists(path_csv) or os.path.getsize(path_csv) == 0
+                with open(path_csv, "a", newline="") as csvfile:
+                    writer = csv.writer(csvfile)
+                    if write_header:
+                        writer.writerow(CSV_FIELDNAMES)
                 with open(path_csv, "a") as csvfile:
                     writer = csv.writer(csvfile)
 
