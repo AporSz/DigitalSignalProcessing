@@ -337,7 +337,7 @@
                 </aside>
             </section>
 
-            <!-- SLIDE 3: HARDWARE & SENSOR SETUP -->
+            <!-- SLIDE 5: HARDWARE & SENSOR SETUP -->
             <section>
                 <h2>Sensor Setup & Profiling</h2>
                 <div class="grid-2">
@@ -396,7 +396,7 @@
                 </aside>
             </section>
 
-            <!-- SLIDE 4: EXPLORATORY DATA ANALYSIS -->
+            <!-- SLIDE 6: EXPLORATORY DATA ANALYSIS -->
             <section>
                 <h2>Exploratory Data Analysis</h2>
                 <div class="grid-2-left">
@@ -420,55 +420,113 @@
                 </aside>
             </section>
 
-            <!-- SLIDE 5: WELCH'S PSD PERIODICITY -->
+            <!-- SLIDE 7: SPATIAL VALIDATION & SENSOR CORRELATION -->
             <section>
-                <h2>Frequency Domain: Welch's PSD</h2>
+                <h2>Spatial Validation & Sensor Correlation</h2>
                 <div class="grid-2-left">
                     <div class="glass-card">
-                        <h3>Power Spectral Density</h3>
+                        <h3>Correlation Matrix Insights</h3>
                         <ul>
-                            <li>Analyzed using <span class="highlight-green">Welch's Method</span> (7-day window segment, 50% overlap).</li>
-                            <li>Successfully isolates periodic signals from high-frequency sensor noise.</li>
-                            <li>Reveals a highly dominant peak at the <span class="highlight-orange">24-hour period</span> (diurnal cycle).</li>
-                            <li>Secondary harmonics are visible at <span class="highlight-blue">12-hour</span> and <span class="highlight-blue">8-hour</span> intervals, indicating non-sinusoidal distortions.</li>
+                            <li><strong>Cross-Stack Consistency:</strong> Near-perfect correlation (<span class="highlight-green">r &gt; 0.85</span>) between main and side stacks confirms horizontal gas uniformity.</li>
+                            <li><strong>Boundary Layer Transition:</strong> Top sensors (18–20) show lower correlation (<span class="highlight-orange">r &approx; 0.5–0.7</span>) due to ambient wind and fresh air mixing.</li>
+                            <li><strong>Meteorological Drive:</strong> Uniform negative correlation with pressure and positive correlation with temperature across the stack.</li>
                         </ul>
                     </div>
-                    <div class="plot-container">
-                        <img class="plot-image" src="../plots/dsp_01_PSD_welch.png" alt="Welch PSD Plot">
-                        <div class="text-small" style="text-align: center; margin-top: 5px;">Figure 2: Welch PSD of CO₂ (Sensor 10)</div>
+                    <div style="display: flex; flex-direction: column; gap: 10px; align-items: center; justify-content: center;">
+                        <div class="plot-container" style="padding: 4px;">
+                            <img class="plot-image" src="../plots/top_sensors_CO2_correlation.png" alt="System Correlation Matrix" style="max-height: 200px;">
+                        </div>
+                        <div class="plot-container" style="padding: 4px;">
+                            <img class="plot-image" src="../plots/CO2_main_vs_side_correlation.png" alt="Main vs Side Correlation Matrix" style="max-height: 200px;">
+                        </div>
                     </div>
                 </div>
 
                 <aside class="notes">
-                    To mathematically confirm these cycles, we transformed the signal to the frequency domain. Using Welch's Power Spectral Density with a 7-day window to achieve good low-frequency resolution, we obtained the spectrum shown in Figure 2. The absolute dominant spike corresponds to exactly 24 hours. The presence of secondary peaks at 12 and 8 hours indicates that the daily cycle is not a pure sine wave, but has sharper, asymmetric transitions.
+                    To validate our sensors and understand their relationships, we computed Pearson correlation matrices. First, we correlated the main stack CO2 sensors with the side tube CO2 sensors. The result shows extremely high correlation, proving that the gas concentration layers are horizontally uniform across the monitoring chamber. Second, we correlated meteorological inputs with all CO2 sensors. This system-wide correlation confirmed that pressure has a consistent negative correlation, and temperature has a consistent positive correlation, with all CO2 sensors. We also note that the top sensors have lower correlation with the bottom ones because they are exposed to fresh air venting.
                 </aside>
             </section>
 
-            <!-- SLIDE 6: FFT MAGNITUDE SPECTRUM -->
+            <!-- SLIDE 8: CROSS-STACK SCATTER & TRENDLINES -->
             <section>
-                <h2>Direct Frequency Spectrum (FFT)</h2>
+                <h2>Cross-Stack Scatter & Trendlines</h2>
                 <div class="grid-2-left">
                     <div class="glass-card">
-                        <h3>Fourier Transform Analysis</h3>
+                        <h3>Linear Fitting Insights</h3>
                         <ul>
-                            <li>Calculated using the <span class="highlight-green">Fast Fourier Transform (FFT)</span> on detrended data.</li>
-                            <li>Signals are mapped to uniform 1-minute time grids via linear interpolation to fix sampling jitter.</li>
-                            <li>Strong magnitude spike at <span class="highlight-orange">f = 0.0417 cycles/hour</span> (1/24 h⁻¹).</li>
-                            <li>Proves the physical mechanism driving mofette gas expansion is strictly tied to solar/diurnal cycles.</li>
+                            <li><strong>Temperature Fit (<span class="highlight-green">r = 0.981</span>):</strong> Near-perfect linear alignment confirms highly uniform thermodynamic conditions across both monitoring channels.</li>
+                            <li><strong>CO₂ Fit (<span class="highlight-blue">r = 0.678</span>):</strong> Strong positive correlation validates consistent gas concentrations, despite the horizontal spatial offset of the side tube.</li>
+                            <li><strong>Density Mapping:</strong> Hexbin scatter highlights that most recordings pool at high CO₂ levels, indicating the stable presence of the gas blanket.</li>
                         </ul>
                     </div>
-                    <div class="plot-container">
-                        <img class="plot-image" src="../plots/dsp_02_FFT_spectrum.png" alt="FFT Spectrum Plot">
-                        <div class="text-small" style="text-align: center; margin-top: 5px;">Figure 3: FFT Magnitude Spectrum</div>
+                    <div style="display: flex; flex-direction: column; gap: 10px; align-items: center; justify-content: center;">
+                        <div class="plot-container" style="padding: 4px;">
+                            <img class="plot-image" src="../plots/temperature_main_vs_side.png" alt="Temperature Main vs Side Fit" style="max-height: 200px;">
+                        </div>
+                        <div class="plot-container" style="padding: 4px;">
+                            <img class="plot-image" src="../plots/CO2_main_vs_side.png" alt="CO2 Main vs Side Fit" style="max-height: 200px;">
+                        </div>
                     </div>
                 </div>
 
                 <aside class="notes">
-                    Complementing the PSD, a direct FFT of the detrended 1-minute interpolated data was performed. In Figure 3, we see the raw magnitude spectrum. Again, the 24-hour cycle stands out massively at 0.0417 cycles per hour. The low-frequency region is highly resolved, confirming that diurnal forcing is the primary periodic engine of the system.
+                    To complement our correlation matrices, we also plotted direct scatter comparisons with trendlines using hexbin density plots. First, looking at temperature between the main stack and the side tube, we see a near-perfect linear fit with a Pearson coefficient of 0.981. This proves that the thermal environment inside the mofette is highly homogeneous. Second, comparing CO2 levels between the two stacks, we get a strong correlation of 0.678. The hexbin density shows that most data points are concentrated at high values, corresponding to the stable gas reservoir at the bottom of the mofette chamber.
                 </aside>
             </section>
 
-            <!-- SLIDE 7: SEASONAL TRENDS (LOWPASS) -->
+            <!-- SLIDE 9: SPATIAL DYNAMICS: VERTICAL HEATMAP -->
+            <section>
+                <h2>Spatial Dynamics: Vertical Heatmap</h2>
+                <div class="grid-2-left">
+                    <div class="glass-card">
+                        <h3>Vertical Profiling Over Time</h3>
+                        <ul>
+                            <li><strong>Vertical Profile:</strong> Maps CO₂ concentration (0–95 cm) over the 7-month period.</li>
+                            <li><strong>Bottom Saturation:</strong> Stable, near-100% accumulation in the lower stack (0–30 cm).</li>
+                            <li><strong>Boundary Layer:</strong> Dynamic daily expansion and contraction at 40–60 cm.</li>
+                            <li><strong>Seasonal Shift:</strong> Boundary height rises higher during mid-summer.</li>
+                        </ul>
+                    </div>
+                    <div class="plot-container">
+                        <img class="plot-image" src="../plots/10_CO2_heatmap.png" alt="CO2 Vertical Heatmap" style="max-height: 380px;">
+                    </div>
+                </div>
+
+                <aside class="notes">
+                    To understand the spatial dimension of this breathing, we plot a vertical heatmap in Figure 2. The vertical axis represents height from 0 to 95 cm, the horizontal axis is time, and the color scale represents CO2 concentration from blue (0%) to red (100%). We clearly see that the bottom 30 cm is permanently filled with pure CO2, while the upper region is clean air. The transition zone around 50 cm is highly dynamic, expanding and contracting.
+                </aside>
+            </section>
+
+            <!-- SLIDE 10: METHODOLOGY: SIGNAL DECOMPOSITION -->
+            <section data-background-color="#0a0c10">
+                <h2>Our Approach: Signal Decomposition</h2>
+                <div class="grid-2">
+                    <div class="glass-card">
+                        <h3>The Analytical Challenge</h3>
+                        <ul>
+                            <li><strong>Overlapping Dynamics:</strong> Raw signals mix slow trends and fast cycles.</li>
+                            <li><strong>Seasonal Drift:</strong> Baseline CO₂ shifts driven by seasonal soil heating.</li>
+                            <li><strong>Diurnal Breathing:</strong> Rapid 24h cycles driven by daily temperature and pressure.</li>
+                            <li><strong>Need for Separation:</strong> Direct analysis mixes these effects, hiding key physical drivers.</li>
+                        </ul>
+                    </div>
+                    <div class="glass-card">
+                        <h3>Digital Filtering Solution</h3>
+                        <ul>
+                            <li><strong>Zero-Phase Filters:</strong> Dual-pass Butterworth (`sosfiltfilt`) prevents time lags.</li>
+                            <li><strong>Lowpass Filter:</strong> 3-day cutoff period isolates the slow seasonal trend.</li>
+                            <li><strong>Bandpass Filter:</strong> 18h–30h passband isolates the 24-hour daily breathing cycle.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <aside class="notes">
+                    How do we study these two separate behaviors? A raw time series mixes the slow seasonal warming trends with the fast daily oscillations. In signal processing, we solve this using digital filters. We designed two Butterworth filters: a lowpass filter with a 3-day cutoff to isolate the seasonal drift, and a bandpass filter centered on the 24-hour period to extract the daily breathing wave. Using scipy's zero-phase dual-pass filter prevents any phase shifting, meaning peaks align exactly in time.
+                </aside>
+            </section>
+
+
+            <!-- SLIDE 11: SEASONAL TRENDS (LOWPASS) -->
             <section>
                 <h2>Seasonal Trends: Lowpass Filter</h2>
                 <div class="grid-2-left">
@@ -483,16 +541,16 @@
                     </div>
                     <div class="plot-container">
                         <img class="plot-image" src="../plots/dsp_03_lowpass_trend.png" alt="Lowpass Filter Plot">
-                        <div class="text-small" style="text-align: center; margin-top: 5px;">Figure 4: Raw CO₂ vs. 3-Day Lowpass Trend</div>
+                        <div class="text-small" style="text-align: center; margin-top: 5px;">Figure 3: Raw CO₂ vs. 3-Day Lowpass Trend</div>
                     </div>
                 </div>
 
                 <aside class="notes">
-                    To study the long-term patterns, we designed a Butterworth lowpass filter with a 3-day cutoff period. We used scipy's dual-pass `sosfiltfilt` function to ensure zero phase distortion, meaning the output is not shifted in time. Figure 4 shows the result: the red line isolates the seasonal base level. We see that the average CO2 level at 50 cm rises in the summer and drops in the autumn, correlating with ambient geological heating and regional barometric seasonal trends.
+                    To study the long-term patterns, we designed a Butterworth lowpass filter with a 3-day cutoff period. We used scipy's dual-pass `sosfiltfilt` function to ensure zero phase distortion, meaning the output is not shifted in time. Figure 3 shows the result: the red line isolates the seasonal base level. We see that the average CO2 level at 50 cm rises in the summer and drops in the autumn, correlating with ambient geological heating and regional barometric seasonal trends.
                 </aside>
             </section>
 
-            <!-- SLIDE 8: DAILY OSCILLATION (BANDPASS) -->
+            <!-- SLIDE 12: DAILY OSCILLATION (BANDPASS) -->
             <section>
                 <h2>Isolating the Daily Cycle: Bandpass</h2>
                 <div class="grid-2-left">
@@ -501,21 +559,45 @@
                         <ul>
                             <li>Isolates the 24-hour oscillation by rejecting both low-frequency trends and high-frequency noise.</li>
                             <li><strong>Passband Range:</strong> 18h to 30h periods (cutoff frequencies of 1.54 × 10⁻⁵ Hz to 9.26 × 10⁻⁶ Hz).</li>
-                            <li>A zoomed 2-week window (Figure 5, bottom) reveals a clean, highly regular, sinusoidal diurnal breathing pattern.</li>
+                            <li>A zoomed 2-week window (Figure 4, bottom) reveals a clean, highly regular, sinusoidal diurnal breathing pattern.</li>
                         </ul>
                     </div>
                     <div class="plot-container">
                         <img class="plot-image" src="../plots/dsp_04_bandpass_daily.png" alt="Bandpass Filter Plot">
-                        <div class="text-small" style="text-align: center; margin-top: 5px;">Figure 5: Isolated Diurnal Cycle (Full & Zoomed)</div>
+                        <div class="text-small" style="text-align: center; margin-top: 5px;">Figure 4: Isolated Diurnal Cycle (Full & Zoomed)</div>
                     </div>
                 </div>
 
                 <aside class="notes">
-                    Next, we wanted to see the pure diurnal cycle without seasonal trends. We designed a Butterworth bandpass filter centered on the 24-hour period, with cutoffs at 18 hours and 30 hours. In Figure 5, the top pane shows the isolated signal over the full 7 months. The bottom pane shows a 2-week zoom. The blue line represents the raw detrended data, and the green line is the bandpass output. It reveals an incredibly stable, regular wave.
+                    Next, we wanted to see the pure diurnal cycle without seasonal trends. We designed a Butterworth bandpass filter centered on the 24-hour period, with cutoffs at 18 hours and 30 hours. In Figure 4, the top pane shows the isolated signal over the full 7 months. The bottom pane shows a 2-week zoom. The blue line represents the raw detrended data, and the green line is the bandpass output. It reveals an incredibly stable, regular wave.
                 </aside>
             </section>
 
-            <!-- SLIDE 9: SPECTROGRAM OVER TIME -->
+            <!-- SLIDE 13: MATHEMATICAL PROOF: FREQUENCY ANALYSIS (PSD) -->
+            <section>
+                <h2>Mathematical Proof: Welch's PSD</h2>
+                <div class="grid-2-left">
+                    <div class="glass-card">
+                        <h3>Power Spectral Density</h3>
+                        <ul>
+                            <li>Analyzed using <span class="highlight-green">Welch's Method</span> (7-day window segment, 50% overlap).</li>
+                            <li>Successfully isolates periodic signals from high-frequency sensor noise.</li>
+                            <li>Reveals a highly dominant peak at the <span class="highlight-orange">24-hour period</span> (diurnal cycle).</li>
+                            <li>Secondary harmonics are visible at <span class="highlight-blue">12-hour</span> and <span class="highlight-blue">8-hour</span> intervals, indicating non-sinusoidal distortions.</li>
+                        </ul>
+                    </div>
+                    <div class="plot-container">
+                        <img class="plot-image" src="../plots/dsp_01_PSD_welch.png" alt="Welch PSD Plot">
+                        <div class="text-small" style="text-align: center; margin-top: 5px;">Figure 5: Welch PSD of CO₂ (Sensor 10)</div>
+                    </div>
+                </div>
+
+                <aside class="notes">
+                    To mathematically confirm these cycles, we transformed the signal to the frequency domain. Using Welch's Power Spectral Density with a 7-day window to achieve good low-frequency resolution, we obtained the spectrum shown in Figure 5. The absolute dominant spike corresponds to exactly 24 hours. The presence of secondary peaks at 12 and 8 hours indicates that the daily cycle is not a pure sine wave, but has sharper, asymmetric transitions.
+                </aside>
+            </section>
+
+            <!-- SLIDE 14: SPECTROGRAM OVER TIME -->
             <section>
                 <h2>Spectrogram: Time-Frequency View</h2>
                 <div class="grid-2-left">
@@ -539,25 +621,23 @@
                 </aside>
             </section>
 
-            <!-- SLIDE 10: ENVIRONMENTAL DRIVERS -->
+            <!-- SLIDE 15: ENVIRONMENTAL DRIVERS -->
             <section>
                 <h2>Drivers: Pressure & Temperature</h2>
                 <div class="grid-2-left">
                     <div class="glass-card">
                         <h3>Cross-Correlation Analysis</h3>
                         <ul>
-                            <li><strong>Barometric Pressure (Figure 7):</strong> Strong negative correlation (<span class="highlight-orange">r = -0.42</span>) at a lag of ~0 hours. Rising air pressure forces gas down into the vent; dropping pressure pulls gas out.</li>
-                            <li><strong>Ambient Temperature (Figure 8):</strong> Positive correlation (<span class="highlight-green">r = +0.28</span>) at a lag of ~3 hours. Ambient temperature leads CO₂ gas expansion, indicating thermal drive.</li>
+                            <li><strong>Barometric Pressure:</strong> Strong negative correlation (<span class="highlight-orange">r = -0.42</span>) at a lag of ~0 hours. Rising air pressure forces gas down into the vent; dropping pressure pulls gas out.</li>
+                            <li><strong>Ambient Temperature:</strong> Positive correlation (<span class="highlight-green">r = +0.28</span>) at a lag of ~3 hours. Ambient temperature leads CO₂ gas expansion, indicating thermal drive.</li>
                         </ul>
                     </div>
-                    <div class="double-plots">
-                        <div class="plot-container">
-                            <img class="plot-image" src="../plots/dsp_06_xcorr_pressure.png" alt="Pressure Correlation">
-                            <div class="text-small" style="text-align: center; margin-top: 5px;">Figure 7: X-Corr: CO₂ vs. Pressure</div>
+                    <div style="display: flex; flex-direction: column; gap: 10px; align-items: center; justify-content: center;">
+                        <div class="plot-container" style="padding: 4px;">
+                            <img class="plot-image" src="../plots/dsp_06_xcorr_pressure.png" alt="Pressure Correlation" style="max-height: 220px;">
                         </div>
-                        <div class="plot-container">
-                            <img class="plot-image" src="../plots/dsp_07_xcorr_temperature.png" alt="Temperature Correlation">
-                            <div class="text-small" style="text-align: center; margin-top: 5px;">Figure 8: X-Corr: CO₂ vs. Temp</div>
+                        <div class="plot-container" style="padding: 4px;">
+                            <img class="plot-image" src="../plots/dsp_07_xcorr_temperature.png" alt="Temperature Correlation" style="max-height: 220px;">
                         </div>
                     </div>
                 </div>
@@ -567,7 +647,7 @@
                 </aside>
             </section>
 
-            <!-- SLIDE 11: CONCLUSIONS & MODELING -->
+            <!-- SLIDE 16: CONCLUSIONS & MODELING -->
             <section data-background-color="#0a0c10">
                 <h2>Conclusions & Modeling Value</h2>
                 <div class="grid-2">
@@ -588,25 +668,31 @@
                         </ul>
                     </div>
                 </div>
-
-                <aside class="notes">
-                    In conclusion, our study successfully mapped mofette dynamics using vertical profiling and digital signal processing. We confirmed that the mofette's "breathing" is driven directly by barometric pressure changes and diurnal temperature cycles. This data provides a solid foundation for predictive safety alert systems and geological volcanic monitoring.
-                </aside>
             </section>
 
-            <!-- SLIDE 12: THANK YOU & DISCUSSION -->
+            <!-- SLIDE 17: BIBLIOGRAPHY -->
+            <section data-background-color="#0a0c10">
+                <div class="glass-card" style="margin: 30px auto 0 auto; max-width: 800px; text-align: left; border-color: rgba(255, 112, 67, 0.25);">
+                    <h3 style="margin-top:0; font-size:1.2em; color: var(--accent-green);">Bibliography</h3>
+                    <ul style="font-size:0.7em; margin-left:20px;">
+                        <li><a href="https://ro.wikipedia.org/wiki/Mofet%C4%83" target="_blank">Wikipedia – Mofetta</a></li>
+                        <li><a href="https://borvizek.hu/index.php/property/the-mofetta-from-baile-uga.html" target="_blank">Borvizek – The Mofetta from Baile Uga</a></li>
+                        <li><a href="https://www.researchgate.net/publication/395890938_CO2_Dynamics_in_a_Mofette_Measurement_and_Modeling" target="_blank">CO₂ Dynamics in a Mofette: Measurement and Modeling (ResearchGate)</a></li>
+                        <li><a href="https://www.researchgate.net/figure/Tectonic-map-of-Romania-showing-the-main-structural-units-simplified-after-Sandulescu_fig1_236588789" target="_blank">Tectonic map of Romania (ResearchGate)</a></li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- SLIDE 18: THANK YOU -->
             <section data-background-color="#0a0c10">
                 <div style="margin-top: 40px;">
-                    <span style="font-size: 0.9em; font-weight: 600; letter-spacing: 2px; color: var(--accent-green); text-transform: uppercase;">Conclusion</span>
                     <h1 style="margin-top: 20px; margin-bottom: 40px; font-size: 2.5em; line-height: 1.2;">Thank You!</h1>
                     <h3 style="font-size: 1.4em; color: var(--text-muted); font-weight: 300; margin-bottom: 50px;">Questions & Discussion</h3>
                 </div>
-                
                 <div class="glass-card" style="margin: 0 auto; max-width: 800px; text-align: center; border-color: rgba(255, 112, 67, 0.25);">
                     <p style="font-size: 0.7em; margin: 0; font-weight: 600; color: #ffffff;"><span style="color: var(--accent-green);">Research:</span> Attila Gergely, Alexandru Szakács, Ágnes Gál, Zoltán Neda</p>
                     <p style="font-size: 0.7em; margin: 6px 0 0 0; font-weight: 600; color: #ffffff;"><span style="color: var(--accent-blue);">Project:</span> Arthur Andreescu, Lucian Popescu, Apor Szakács</p>
                 </div>
-
                 <aside class="notes">
                     Thank you very much for your time and attention. I am now open to any questions or comments you might have regarding the measurements, modeling, or DSP analysis of this mofette data.
                 </aside>
