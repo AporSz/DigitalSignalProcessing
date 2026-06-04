@@ -122,7 +122,7 @@ def correlation_matrix(data, sensors):
     cm = np.corrcoef(matrix)
 
     plt.figure(figsize=(10, 8)) # Make the plot a bit larger for many sensors
-    plt.imshow(cm, cmap='coolwarm', vmin=-1, vmax=1)
+    plt.imshow(cm, cmap='coolwarm')
     
     # Add a colorbar so we know what the colors mean (-1 to 1)
     plt.colorbar(label='Correlation Coefficient (r)')
