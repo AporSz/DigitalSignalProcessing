@@ -228,6 +228,38 @@
         .plot-container {
             cursor: zoom-in;
         }
+
+        /* Code slide styles */
+        .code-slide pre {
+            background: #0d1117;
+            border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 12px;
+            padding: 14px 18px;
+            font-size: 0.52em;
+            line-height: 1.55;
+            text-align: left;
+            overflow: hidden;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+            margin: 0;
+        }
+        .code-slide pre code {
+            font-family: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
+            color: #c9d1d9;
+            white-space: pre;
+        }
+        .code-slide .code-label {
+            font-size: 0.6em;
+            color: var(--text-muted);
+            text-align: left;
+            margin-bottom: 6px;
+            font-family: 'JetBrains Mono', monospace;
+        }
+        .kw  { color: #ff7b72; }
+        .fn  { color: #d2a8ff; }
+        .st  { color: #a5d6ff; }
+        .cm  { color: #8b949e; font-style: italic; }
+        .nm  { color: #79c0ff; }
+        .bi  { color: #ffa657; }
     </style>
 </head>
 <body>
@@ -447,6 +479,32 @@
                 </aside>
             </section>
 
+            <!-- SLIDE 7b: CODE — Correlation Matrix -->
+            <section class="code-slide" data-background-color="#0a0c10">
+                <h2 style="font-size:1.3em; margin-bottom:10px;">Code: Correlation Matrix</h2>
+                <p class="code-label">utils/plot_utils.py — <span style="color:var(--accent-green);">correlation_matrix()</span></p>
+                <pre><code><span class="kw">def</span> <span class="fn">correlation_matrix</span>(data, sensors):
+    arrays, labels = [], []
+    <span class="kw">for</span> sensor <span class="kw">in</span> sensors:
+        sensor_data = np.<span class="bi">array</span>(data[sensor])
+        <span class="kw">if</span> sensor_data.ndim == <span class="nm">1</span>:          <span class="cm"># 1-D sensor (e.g. Pressure_Top)</span>
+            arrays.<span class="bi">append</span>(sensor_data)
+            labels.<span class="bi">append</span>(sensor)
+        <span class="kw">elif</span> sensor_data.ndim == <span class="nm">2</span>:        <span class="cm"># 2-D array — one row per sensor height</span>
+            <span class="kw">for</span> i <span class="kw">in</span> <span class="bi">range</span>(sensor_data.shape[<span class="nm">0</span>]):
+                arrays.<span class="bi">append</span>(sensor_data[i])
+                labels.<span class="bi">append</span>(<span class="st">f"</span>{sensor}<span class="st">_{i+1}"</span>)
+
+    matrix = np.<span class="bi">vstack</span>(arrays)
+    cm = np.<span class="bi">corrcoef</span>(matrix)       <span class="cm"># Pearson r for every sensor pair</span>
+
+    plt.<span class="fn">imshow</span>(cm, cmap=<span class="st">'coolwarm'</span>)
+    plt.<span class="fn">colorbar</span>(label=<span class="st">'Correlation Coefficient (r)'</span>)
+    plt.<span class="fn">xticks</span>(ticks=np.<span class="bi">arange</span>(<span class="bi">len</span>(labels)), labels=labels, rotation=<span class="nm">90</span>)
+    plt.<span class="fn">yticks</span>(ticks=np.<span class="bi">arange</span>(<span class="bi">len</span>(labels)), labels=labels)</code></pre>
+                <aside class="notes">The correlation matrix is built by stacking all sensor arrays into a single matrix and calling np.corrcoef, which returns the pairwise Pearson r for every combination.</aside>
+            </section>
+
             <!-- SLIDE 8: CROSS-STACK SCATTER & TRENDLINES -->
             <section>
                 <h2>Cross-Stack Scatter & Trendlines</h2>
@@ -474,6 +532,31 @@
                 </aside>
             </section>
 
+            <!-- SLIDE 8b: CODE — Scatter Trendline -->
+            <section class="code-slide" data-background-color="#0a0c10">
+                <h2 style="font-size:1.3em; margin-bottom:10px;">Code: Scatter Plot with Trendline</h2>
+                <p class="code-label">utils/plot_utils.py — <span style="color:var(--accent-green);">plot_correlation()</span></p>
+                <pre><code><span class="kw">def</span> <span class="fn">plot_correlation</span>(data, sensor1, sensor2, index1=<span class="nm">-1</span>, index2=<span class="nm">-1</span>):
+    x = np.<span class="bi">array</span>(data[sensor1])[index1]  <span class="cm"># e.g. Temperature_main row 9</span>
+    y = np.<span class="bi">array</span>(data[sensor2])[index2]  <span class="cm"># e.g. Temperature_side row 9</span>
+
+    r_value = np.<span class="bi">corrcoef</span>(x, y)[<span class="nm">0</span>, <span class="nm">1</span>]   <span class="cm"># Pearson r</span>
+
+    <span class="cm"># Hexbin density map — better than scatter for 300k+ points</span>
+    plt.<span class="fn">hexbin</span>(x, y, gridsize=<span class="nm">50</span>, cmap=<span class="st">'Blues'</span>, mincnt=<span class="nm">1</span>)
+    plt.<span class="fn">colorbar</span>().set_label(<span class="st">'Number of Data Points'</span>)
+
+    <span class="cm"># Least-squares trendline</span>
+    m, b = np.<span class="bi">polyfit</span>(x, y, <span class="nm">1</span>)
+    plt.<span class="fn">plot</span>(x, m * x + b,
+             color=<span class="st">'red'</span>, linestyle=<span class="st">'--'</span>,
+             label=<span class="st">f'Trendline (r={r_value:.3f})'</span>)
+
+    plt.<span class="fn">legend</span>()
+    plt.<span class="fn">grid</span>(<span class="nm">True</span>, linestyle=<span class="st">':'</span>, alpha=<span class="nm">0.5</span>)</code></pre>
+                <aside class="notes">The hexbin map efficiently visualises a dense cloud of 300k+ points. The trendline is a simple first-order polynomial fit using np.polyfit. The Pearson r is printed on the legend.</aside>
+            </section>
+
             <!-- SLIDE 9: SPATIAL DYNAMICS: VERTICAL HEATMAP -->
             <section>
                 <h2>Spatial Dynamics: Vertical Heatmap</h2>
@@ -495,6 +578,31 @@
                 <aside class="notes">
                     To understand the spatial dimension of this breathing, we plot a vertical heatmap in Figure 2. The vertical axis represents height from 0 to 95 cm, the horizontal axis is time, and the color scale represents CO2 concentration from blue (0%) to red (100%). We clearly see that the bottom 30 cm is permanently filled with pure CO2, while the upper region is clean air. The transition zone around 50 cm is highly dynamic, expanding and contracting.
                 </aside>
+            </section>
+
+            <!-- SLIDE 9b: CODE — Vertical Heatmap -->
+            <section class="code-slide" data-background-color="#0a0c10">
+                <h2 style="font-size:1.3em; margin-bottom:10px;">Code: Vertical CO₂ Heatmap</h2>
+                <p class="code-label">utils/plot_all.py — <span style="color:var(--accent-green);">plot_co2_heatmap()</span></p>
+                <pre><code><span class="cm"># Stack all 20 sensor rows into a (20 × N) matrix</span>
+co2_matrix = np.<span class="bi">array</span>(data[<span class="st">"CO2_main"</span>])
+
+<span class="cm"># Bin each data point into 1-hour slots</span>
+bin_indices = ((timestamps - start_time) / <span class="nm">3600</span>).<span class="bi">astype</span>(<span class="bi">int</span>)
+
+<span class="cm"># Compute hourly mean per sensor using fast bincount</span>
+heatmap_data = np.<span class="fn">full</span>((<span class="nm">20</span>, n_hours), np.nan)
+<span class="kw">for</span> s <span class="kw">in</span> <span class="bi">range</span>(<span class="nm">20</span>):
+    sums   = np.<span class="bi">bincount</span>(bin_indices, weights=co2_matrix[s], minlength=n_hours)
+    counts = np.<span class="bi">bincount</span>(bin_indices, minlength=n_hours)
+    mask   = counts > <span class="nm">0</span>
+    heatmap_data[s, mask] = sums[mask] / counts[mask]
+
+<span class="cm"># Render as a colour-mapped grid (height × time)</span>
+im = ax.<span class="fn">pcolormesh</span>(x_edges, y_edges, heatmap_data,
+                    cmap=<span class="st">'inferno'</span>, shading=<span class="st">'flat'</span>)
+fig.<span class="fn">colorbar</span>(im, ax=ax).set_label(<span class="st">r'CO$_2$ Concentration (%)'</span>)</code></pre>
+                <aside class="notes">Each column of the heatmap is the hourly average CO2 at each of the 20 sensor heights. The pcolormesh shading makes spatial stratification immediately visible.</aside>
             </section>
 
             <!-- SLIDE 10: METHODOLOGY: SIGNAL DECOMPOSITION -->
@@ -550,6 +658,29 @@
                 </aside>
             </section>
 
+            <!-- SLIDE 11b: CODE — Lowpass Filter -->
+            <section class="code-slide" data-background-color="#0a0c10">
+                <h2 style="font-size:1.3em; margin-bottom:10px;">Code: Lowpass Filter</h2>
+                <p class="code-label">dsp_analysis.py — <span style="color:var(--accent-green);">plot_lowpass_trend()</span></p>
+                <pre><code><span class="kw">from</span> scipy.signal <span class="kw">import</span> <span class="bi">butter</span>, <span class="bi">sosfiltfilt</span>
+
+fs = <span class="nm">1.0</span> / dt_min                        <span class="cm"># 1 sample / minute</span>
+cutoff_period_min = <span class="nm">3</span> * <span class="nm">24</span> * <span class="nm">60</span>          <span class="cm"># 3-day cutoff</span>
+cutoff_freq       = <span class="nm">1.0</span> / cutoff_period_min
+nyquist           = fs / <span class="nm">2.0</span>
+Wn                = cutoff_freq / nyquist  <span class="cm"># normalised [0, 1]</span>
+
+<span class="cm"># 3rd-order Butterworth lowpass (second-order sections for stability)</span>
+sos = <span class="bi">butter</span>(N=<span class="nm">3</span>, Wn=Wn, btype=<span class="st">'low'</span>, output=<span class="st">'sos'</span>)
+
+<span class="cm"># Zero-phase forward-backward pass — no time-shift artefacts</span>
+co2_trend = <span class="bi">sosfiltfilt</span>(sos, co2)
+
+ax.<span class="fn">plot</span>(dates, co2,       color=<span class="st">'#90CAF9'</span>, lw=<span class="nm">0.3</span>, alpha=<span class="nm">0.5</span>, label=<span class="st">'Raw'</span>)
+ax.<span class="fn">plot</span>(dates, co2_trend, color=<span class="st">'#D32F2F'</span>, lw=<span class="nm">2.0</span>,          label=<span class="st">'Trend (3-day LP)'</span>)</code></pre>
+                <aside class="notes">A 3rd-order Butterworth in second-order sections is numerically stable even for very low normalised cutoff frequencies. sosfiltfilt applies the filter twice (forward + backward) to guarantee zero phase shift.</aside>
+            </section>
+
             <!-- SLIDE 12: DAILY OSCILLATION (BANDPASS) -->
             <section>
                 <h2>Isolating the Daily Cycle: Bandpass</h2>
@@ -571,6 +702,34 @@
                 <aside class="notes">
                     Next, we wanted to see the pure diurnal cycle without seasonal trends. We designed a Butterworth bandpass filter centered on the 24-hour period, with cutoffs at 18 hours and 30 hours. In Figure 4, the top pane shows the isolated signal over the full 7 months. The bottom pane shows a 2-week zoom. The blue line represents the raw detrended data, and the green line is the bandpass output. It reveals an incredibly stable, regular wave.
                 </aside>
+            </section>
+
+            <!-- SLIDE 12b: CODE — Bandpass Filter -->
+            <section class="code-slide" data-background-color="#0a0c10">
+                <h2 style="font-size:1.3em; margin-bottom:10px;">Code: Bandpass Filter</h2>
+                <p class="code-label">dsp_analysis.py — <span style="color:var(--accent-green);">plot_bandpass_daily()</span></p>
+                <pre><code><span class="cm"># Passband: 18 h → 30 h  (centred on the 24h diurnal cycle)</span>
+low_period  = <span class="nm">30</span> * <span class="nm">60</span>   <span class="cm"># 30 h in minutes → low-frequency edge</span>
+high_period = <span class="nm">18</span> * <span class="nm">60</span>   <span class="cm"># 18 h in minutes → high-frequency edge</span>
+
+low_freq  = <span class="nm">1.0</span> / low_period   <span class="cm"># cycles / minute</span>
+high_freq = <span class="nm">1.0</span> / high_period
+
+Wn = [low_freq / nyquist, high_freq / nyquist]  <span class="cm"># normalised pair</span>
+
+sos = <span class="bi">butter</span>(N=<span class="nm">3</span>, Wn=Wn, btype=<span class="st">'band'</span>, output=<span class="st">'sos'</span>)
+co2_daily = <span class="bi">sosfiltfilt</span>(sos, co2)   <span class="cm"># zero-phase filtered result</span>
+
+<span class="cm"># Full-range view</span>
+ax1.<span class="fn">plot</span>(dates, co2_daily, color=<span class="st">'#2E7D32'</span>, lw=<span class="nm">0.5</span>)
+
+<span class="cm"># 2-week zoomed view (middle of campaign)</span>
+mid = <span class="bi">len</span>(dates) // <span class="nm">2</span>
+two_weeks = <span class="nm">14</span> * <span class="nm">24</span> * <span class="nm">60</span>
+ax2.<span class="fn">plot</span>(dates[mid-two_weeks//<span class="nm">2</span> : mid+two_weeks//<span class="nm">2</span>],
+         co2_daily[mid-two_weeks//<span class="nm">2</span> : mid+two_weeks//<span class="nm">2</span>],
+         color=<span class="st">'#2E7D32'</span>, lw=<span class="nm">1.2</span>, label=<span class="st">'24h bandpass'</span>)</code></pre>
+                <aside class="notes">The bandpass passband is defined by two period boundaries converted to normalised frequencies. Passing Wn as a list of two values tells butter to design a bandpass rather than a lowpass.</aside>
             </section>
 
             <!-- SLIDE 13: MATHEMATICAL PROOF: FREQUENCY ANALYSIS (PSD) -->
@@ -597,6 +756,32 @@
                 </aside>
             </section>
 
+            <!-- SLIDE 13b: CODE — Welch PSD -->
+            <section class="code-slide" data-background-color="#0a0c10">
+                <h2 style="font-size:1.3em; margin-bottom:10px;">Code: Welch's Power Spectral Density</h2>
+                <p class="code-label">dsp_analysis.py — <span style="color:var(--accent-green);">plot_psd()</span></p>
+                <pre><code><span class="kw">from</span> scipy.signal <span class="kw">import</span> <span class="bi">welch</span>
+
+fs = <span class="nm">1.0</span> / dt_min                   <span class="cm"># 1 sample / minute</span>
+
+<span class="cm"># 7-day window gives ~1.6 µHz frequency resolution</span>
+nperseg = <span class="bi">min</span>(<span class="nm">10080</span>, <span class="bi">len</span>(co2) // <span class="nm">4</span>)   <span class="cm"># 7 days = 10 080 minutes</span>
+
+freqs, psd = <span class="bi">welch</span>(co2, fs=fs,
+                    nperseg=nperseg,
+                    noverlap=nperseg // <span class="nm">2</span>)   <span class="cm"># 50% overlap</span>
+
+<span class="cm"># Convert frequency (cycles/min) → period (hours)</span>
+valid        = freqs > <span class="nm">0</span>
+period_hours = <span class="nm">1.0</span> / (freqs[valid] * <span class="nm">60</span>)
+psd          = psd[valid]
+
+ax.<span class="fn">loglog</span>(period_hours, psd, color=<span class="st">'#1565C0'</span>, lw=<span class="nm">0.8</span>)
+ax.<span class="fn">axvline</span>(x=<span class="nm">24</span>, color=<span class="st">'#D32F2F'</span>, linestyle=<span class="st">'--'</span>, label=<span class="st">'24h period'</span>)
+ax.<span class="fn">invert_xaxis</span>()                    <span class="cm"># short periods on the right</span></code></pre>
+                <aside class="notes">The 7-day nperseg gives fine frequency resolution around the 24h period. The 50% noverlap doubles the number of averaged segments, further reducing variance of the PSD estimate.</aside>
+            </section>
+
             <!-- SLIDE 14: SPECTROGRAM OVER TIME -->
             <section>
                 <h2>Spectrogram: Time-Frequency View</h2>
@@ -619,6 +804,33 @@
                 <aside class="notes">
                     Is this 24-hour cycle constant, or does it change? To find out, we generated a spectrogram, shown in Figure 6. The horizontal axis is time (7 months), and the vertical axis is the period in hours. The color intensity represents energy. You can see a bright, continuous horizontal strip at 24 hours. The intensity is strongest in August and September, which indicates that summer conditions amplify the diurnal breathing amplitude of the mofette.
                 </aside>
+            </section>
+
+            <!-- SLIDE 14b: CODE — Spectrogram -->
+            <section class="code-slide" data-background-color="#0a0c10">
+                <h2 style="font-size:1.3em; margin-bottom:10px;">Code: Spectrogram</h2>
+                <p class="code-label">dsp_analysis.py — <span style="color:var(--accent-green);">plot_spectrogram()</span></p>
+                <pre><code><span class="kw">from</span> scipy.signal <span class="kw">import</span> <span class="bi">spectrogram</span>
+
+<span class="cm"># 7-day segments, sliding by 1 day at a time</span>
+nperseg  = <span class="nm">7</span> * <span class="nm">24</span> * <span class="nm">60</span>            <span class="cm"># 7 days in minutes</span>
+noverlap = nperseg - <span class="nm">24</span> * <span class="nm">60</span>       <span class="cm"># advance by 1 day per step</span>
+
+f, t_spec, Sxx = <span class="bi">spectrogram</span>(co2, fs=fs,
+                               nperseg=nperseg,
+                               noverlap=noverlap,
+                               scaling=<span class="st">'density'</span>)
+
+<span class="cm"># Convert frequency axis to period (hours), keep 6h–72h</span>
+period_hours = <span class="nm">1.0</span> / (f[<span class="nm">1</span>:] * <span class="nm">60</span>)
+mask = (period_hours >= <span class="nm">6</span>) & (period_hours <= <span class="nm">72</span>)
+
+<span class="cm"># Colour-map in dB — log scale reveals subtle seasonal changes</span>
+im = ax.<span class="fn">pcolormesh</span>(spec_dates_num, period_hours[mask],
+                    <span class="nm">10</span> * np.<span class="fn">log10</span>(Sxx[mask, :]),
+                    cmap=<span class="st">'magma'</span>, shading=<span class="st">'auto'</span>)
+ax.<span class="fn">axhline</span>(y=<span class="nm">24</span>, color=<span class="st">'white'</span>, linestyle=<span class="st">'--'</span>, label=<span class="st">'24h period'</span>)</code></pre>
+                <aside class="notes">Using 10*log10 compresses the dynamic range so that both the dominant 24h ridge and the fainter harmonics are visible simultaneously on the same colour scale.</aside>
             </section>
 
             <!-- SLIDE 15: ENVIRONMENTAL DRIVERS -->
@@ -645,6 +857,32 @@
                 <aside class="notes">
                     What environmental factors drive this breathing? We ran cross-correlation between CO2 and atmospheric pressure, and CO2 and ambient temperature. Pressure shows a strong negative correlation at 0 hours lag. When atmospheric pressure drops, it acts like a pump, drawing CO2 up and out. Ambient temperature shows a positive correlation peaking at a 3-hour lag. Sunlight warms the ground and air, causing thermal expansion that drives gas upward after a 3-hour thermal inertia delay.
                 </aside>
+            </section>
+
+            <!-- SLIDE 15b: CODE — Cross-Correlation -->
+            <section class="code-slide" data-background-color="#0a0c10">
+                <h2 style="font-size:1.3em; margin-bottom:10px;">Code: Cross-Correlation</h2>
+                <p class="code-label">dsp_analysis.py — <span style="color:var(--accent-green);">plot_xcorr_pressure() / plot_xcorr_temperature()</span></p>
+                <pre><code><span class="kw">from</span> scipy <span class="kw">import</span> signal
+
+<span class="cm"># Normalise both signals to zero-mean, unit-variance</span>
+co2_norm      = (co2      - np.<span class="fn">mean</span>(co2))      / np.<span class="fn">std</span>(co2)
+pressure_norm = (pressure - np.<span class="fn">mean</span>(pressure)) / np.<span class="fn">std</span>(pressure)
+
+<span class="cm"># Full cross-correlation — O(N log N) via FFT convolution</span>
+correlation  = signal.<span class="fn">correlate</span>(co2_norm, pressure_norm, mode=<span class="st">'full'</span>)
+correlation /= <span class="bi">len</span>(co2_norm)           <span class="cm"># normalise to [-1, 1]</span>
+
+<span class="cm"># Lag axis in hours (positive = pressure leads CO2)</span>
+lags      = np.<span class="fn">arange</span>(-<span class="bi">len</span>(pressure_norm) + <span class="nm">1</span>, <span class="bi">len</span>(co2_norm))
+lag_hours = lags * dt_min / <span class="nm">60.0</span>
+
+<span class="cm"># Trim to ±72 h and find peak</span>
+mask      = np.<span class="fn">abs</span>(lag_hours) <= <span class="nm">72</span>
+peak_idx  = np.<span class="fn">argmax</span>(np.<span class="fn">abs</span>(correlation[mask]))
+peak_lag  = lag_hours[mask][peak_idx]
+peak_val  = correlation[mask][peak_idx]</code></pre>
+                <aside class="notes">scipy.signal.correlate uses FFT convolution so it scales as O(N log N) even for 300k-sample signals. Normalising by len() converts the raw sum into a Pearson-like coefficient bounded between -1 and 1.</aside>
             </section>
 
             <!-- SLIDE 16: CONCLUSIONS & MODELING -->
