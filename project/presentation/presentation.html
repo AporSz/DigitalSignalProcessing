@@ -277,11 +277,11 @@
                 <div class="glass-card" style="margin: 0 auto; max-width: 800px; text-align: center; border-color: rgba(255, 112, 67, 0.25);">
                     <p style="font-size: 0.75em; margin: 0; font-weight: 600; color: #ffffff;"><span style="color: var(--accent-green);">Research by:</span> Attila Gergely, Alexandru Szakács, Ágnes Gál, Zoltán Neda</p>
                     <p style="font-size: 0.75em; margin: 8px 0 0 0; font-weight: 600; color: #ffffff;"><span style="color: var(--accent-blue);">Project by:</span> Arthur Andreescu, Lucian Popescu, Apor Szakács</p>
-                    <p style="font-size: 0.6em; margin: 10px 0 0 0; color: var(--text-muted);">Digital Signal Processing | Covasna, Romania</p>
+                    <p style="font-size: 0.6em; margin: 10px 0 0 0; color: var(--text-muted);">Digital Signal Processing</p>
                 </div>
 
                 <aside class="notes">
-                    Welcome to the presentation. Today we are presenting the measurements and modeling of carbon dioxide dynamics within a natural mofette (gas vent) located in Covasna, Romania. We'll explore the experimental remote sensing setup and dive deep into the digital signal processing (DSP) techniques used to uncover diurnal, seasonal, and environmental patterns in the gas emissions.
+                    Welcome to the presentation. Today we are presenting the measurements and modeling of carbon dioxide dynamics within a natural mofette (gas vent) located in Covasna, Romania. We'll explore the experimental remote sensing setup and dive deep into the digital signal processing (DSP) techniques used to uncover daily, seasonal, and environmental patterns in the gas emissions.
                 </aside>
             </section>
 
@@ -436,7 +436,7 @@
                         <h3>Raw Time Series Insights</h3>
                         <ul>
                             <li><strong>Vertical Stratification:</strong> Lower stack sensors (0-30 cm) stay saturated at ~100% CO₂.</li>
-                            <li><strong>Active Boundary Zone:</strong> Middle sensors (40-60 cm) exhibit massive <span class="highlight-green">diurnal oscillations</span> (daily cycles).</li>
+                            <li><strong>Active Boundary Zone:</strong> Middle sensors (40-60 cm) exhibit massive <span class="highlight-green">daily oscillations</span> (daily cycles).</li>
                             <li><strong>Emission Bursts:</strong> Sharp spikes in upper sensors correspond to brief high-intensity vents.</li>
                             <li><strong>Seasonal Shift:</strong> Summer periods show wider daily fluctuation envelopes compared to spring/autumn.</li>
                         </ul>
@@ -690,7 +690,7 @@ ax.<span class="fn">plot</span>(dates, co2_trend, color=<span class="st">'#D32F2
                         <ul>
                             <li>Isolates the 24-hour oscillation by rejecting both low-frequency trends and high-frequency noise.</li>
                             <li><strong>Passband Range:</strong> 18h to 30h periods (cutoff frequencies of 1.54 × 10⁻⁵ Hz to 9.26 × 10⁻⁶ Hz).</li>
-                            <li>A zoomed 2-week window (Figure 4, bottom) reveals a clean, highly regular, sinusoidal diurnal breathing pattern.</li>
+                            <li>A zoomed 2-week window (Figure 4, bottom) reveals a clean, highly regular, sinusoidal daily breathing pattern.</li>
                         </ul>
                     </div>
                     <div class="plot-container">
@@ -700,7 +700,7 @@ ax.<span class="fn">plot</span>(dates, co2_trend, color=<span class="st">'#D32F2
                 </div>
 
                 <aside class="notes">
-                    Next, we wanted to see the pure diurnal cycle without seasonal trends. We designed a Butterworth bandpass filter centered on the 24-hour period, with cutoffs at 18 hours and 30 hours. In Figure 4, the top pane shows the isolated signal over the full 7 months. The bottom pane shows a 2-week zoom. The blue line represents the raw detrended data, and the green line is the bandpass output. It reveals an incredibly stable, regular wave.
+                    Next, we wanted to see the pure daily cycle without seasonal trends. We designed a Butterworth bandpass filter centered on the 24-hour period, with cutoffs at 18 hours and 30 hours. In Figure 4, the top pane shows the isolated signal over the full 7 months. The bottom pane shows a 2-week zoom. The blue line represents the raw detrended data, and the green line is the bandpass output. It reveals an incredibly stable, regular wave.
                 </aside>
             </section>
 
@@ -708,7 +708,7 @@ ax.<span class="fn">plot</span>(dates, co2_trend, color=<span class="st">'#D32F2
             <section class="code-slide" data-background-color="#0a0c10">
                 <h2 style="font-size:1.3em; margin-bottom:10px;">Code: Bandpass Filter</h2>
                 <p class="code-label">dsp_analysis.py — <span style="color:var(--accent-green);">plot_bandpass_daily()</span></p>
-                <pre><code><span class="cm"># Passband: 18 h → 30 h  (centred on the 24h diurnal cycle)</span>
+                <pre><code><span class="cm"># Passband: 18 h → 30 h  (centred on the 24h daily cycle)</span>
 low_period  = <span class="nm">30</span> * <span class="nm">60</span>   <span class="cm"># 30 h in minutes → low-frequency edge</span>
 high_period = <span class="nm">18</span> * <span class="nm">60</span>   <span class="cm"># 18 h in minutes → high-frequency edge</span>
 
@@ -741,13 +741,19 @@ ax2.<span class="fn">plot</span>(dates[mid-two_weeks//<span class="nm">2</span> 
                         <ul>
                             <li>Analyzed using <span class="highlight-green">Welch's Method</span> (7-day window segment, 50% overlap).</li>
                             <li>Successfully isolates periodic signals from high-frequency sensor noise.</li>
-                            <li>Reveals a highly dominant peak at the <span class="highlight-orange">24-hour period</span> (diurnal cycle).</li>
+                            <li>Reveals a highly dominant peak at the <span class="highlight-orange">24-hour period</span> (daily cycle).</li>
                             <li>Secondary harmonics are visible at <span class="highlight-blue">12-hour</span> and <span class="highlight-blue">8-hour</span> intervals, indicating non-sinusoidal distortions.</li>
                         </ul>
                     </div>
-                    <div class="plot-container">
-                        <img class="plot-image" src="../plots/dsp_01_PSD_welch.png" alt="Welch PSD Plot">
-                        <div class="text-small" style="text-align: center; margin-top: 5px;">Figure 5: Welch PSD of CO₂ (Sensor 10)</div>
+                    <div style="display: flex; flex-direction: column; gap: 8px; align-items: center; justify-content: center;">
+                        <div class="plot-container" style="padding: 4px;">
+                            <img class="plot-image" src="../plots/dsp_01_PSD_welch.png" alt="Welch PSD Plot" style="max-height: 195px;">
+                            <div class="text-small" style="text-align: center; margin-top: 3px;">Figure 5: Welch PSD of CO₂ (Sensor 10)</div>
+                        </div>
+                        <div class="plot-container" style="padding: 4px;">
+                            <img class="plot-image" src="../plots/temp_1M_main_stack.png" alt="1-Month Main Stack Temperature" style="max-height: 195px;">
+                            <div class="text-small" style="text-align: center; margin-top: 3px;">Main Stack Temperature (1 month)</div>
+                        </div>
                     </div>
                 </div>
 
@@ -802,7 +808,7 @@ ax.<span class="fn">invert_xaxis</span>()                    <span class="cm"># 
                 </div>
 
                 <aside class="notes">
-                    Is this 24-hour cycle constant, or does it change? To find out, we generated a spectrogram, shown in Figure 6. The horizontal axis is time (7 months), and the vertical axis is the period in hours. The color intensity represents energy. You can see a bright, continuous horizontal strip at 24 hours. The intensity is strongest in August and September, which indicates that summer conditions amplify the diurnal breathing amplitude of the mofette.
+                    Is this 24-hour cycle constant, or does it change? To find out, we generated a spectrogram, shown in Figure 6. The horizontal axis is time (7 months), and the vertical axis is the period in hours. The color intensity represents energy. You can see a bright, continuous horizontal strip at 24 hours. The intensity is strongest in August and September, which indicates that summer conditions amplify the daily breathing amplitude of the mofette.
                 </aside>
             </section>
 
@@ -894,7 +900,7 @@ peak_val  = correlation[mask][peak_idx]</code></pre>
                         <ul>
                             <li>Confirmed **stratified CO₂ gas layering** in the mofette stack.</li>
                             <li>Established **barometric pressure** as the primary immediate physical driver of gas rise.</li>
-                            <li>Identified a **diurnal 24h rhythm** driven by temperature cycles with a **3-hour thermal lag**.</li>
+                            <li>Identified a **daily 24h rhythm** driven by temperature cycles with a **3-hour thermal lag**.</li>
                         </ul>
                     </div>
                     <div class="glass-card">
