@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>CO₂ Dynamics in a Mofette: Measurement, Modeling & DSP Analysis</title>
+    <meta name="description" content="Presentation on CO2 Dynamics in a Mofette: Measurement, Modeling & Digital Signal Processing Analysis">
+    <meta name="author" content="Research by: Attila Gergely, Alexandru Szakács, Ágnes Gál, Zoltán Neda; Project by: Arthur Andreescu, Lucian Popescu, Apor Szakács">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+    <!-- Tab Favicon (Custom Mofette Vent & Signal Wave) -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%230f121a'/><path d='M25 80 L35 45 L65 45 L75 80 Z' fill='%23555555'/><path d='M40 35 Q50 15 60 35' fill='none' stroke='%23ff7043' stroke-width='8' stroke-linecap='round'/><path d='M48 25 Q58 5 68 25' fill='none' stroke='%2300bcd4' stroke-width='6' stroke-linecap='round'/></svg>">
+
+    <!-- Reveal.js styles -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.5.0/reveal.min.css">
+    <!-- Base black theme with customized overrides -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.5.0/theme/black.min.css" id="theme">
+
+    <!-- Modern Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Space+Grotesk:wght@600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Premium Custom Styling overrides -->
+    <style>
+        :root {
+            --r-main-font: 'Outfit', sans-serif;
+            --r-heading-font: 'Space Grotesk', sans-serif;
+            --r-background-color: #0f121a;
+            --accent-green: #ff7043;
+            --accent-blue: #00bcd4;
+            --accent-orange: #ffb300;
+            --text-muted: #8e9aa8;
+            --card-bg: rgba(255, 255, 255, 0.03);
+            --card-border: rgba(255, 255, 255, 0.08);
+        }
+
+        .reveal {
+            font-family: var(--r-main-font);
+            color: #e2e8f0;
+        }
+
+        .reveal h1, .reveal h2, .reveal h3, .reveal h4 {
+            font-family: var(--r-heading-font);
+            font-weight: 800;
+            text-transform: none;
+            color: #ffffff;
+            text-shadow: 0 4px 12px rgba(0,0,0,0.5);
+        }
+
+        .reveal h1 {
+            font-size: 2.8em;
+            background: linear-gradient(135deg, #ffffff 30%, var(--accent-green) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .reveal h2 {
+            font-size: 1.8em;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+            padding-bottom: 8px;
+            margin-bottom: 15px;
+        }
+
+        /* Layout helpers */
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            align-items: stretch;
+        }
+
+        .grid-2-left {
+            display: grid;
+            grid-template-columns: 1.2fr 0.8fr;
+            gap: 20px;
+            align-items: center;
+        }
+
+        /* Glassmorphism Cards */
+        .glass-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            padding: 16px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+            text-align: left;
+        }
+
+        .glass-card h3 {
+            margin-top: 0;
+            font-size: 1.15em;
+            color: var(--accent-green);
+            margin-bottom: 8px;
+        }
+
+        /* Lists */
+        .reveal ul {
+            list-style-type: square;
+            margin-left: 20px;
+            padding-left: 0;
+        }
+
+        .reveal ul li {
+            margin-bottom: 8px;
+            font-size: 0.76em;
+            line-height: 1.35;
+            color: #e2e8f0;
+        }
+
+        .reveal ul li::marker {
+            color: var(--accent-green);
+        }
+
+        /* Color utilities */
+        .highlight-green { color: var(--accent-green); font-weight: 600; }
+        .highlight-blue { color: var(--accent-blue); font-weight: 600; }
+        .highlight-orange { color: var(--accent-orange); font-weight: 600; }
+        .text-small { font-size: 0.72em; color: var(--text-muted); }
+
+        /* Images and figures */
+        .plot-container {
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6);
+            background: #ffffff; /* Gives white background to matplotlib plots */
+            padding: 8px;
+            transition: transform 0.3s ease;
+        }
+
+        .plot-container:hover {
+            transform: scale(1.02);
+        }
+
+        .plot-image {
+            max-width: 100%;
+            max-height: 380px; /* Fixed relative to the 750px virtual slide height */
+            display: block;
+            margin: 0 auto;
+            object-fit: contain;
+        }
+
+        .double-plots {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .double-plots .plot-image {
+            max-height: 240px; /* Fixed relative to the 750px virtual slide height */
+        }
+
+        /* Tables */
+        .reveal table {
+            font-size: 0.65em;
+            width: 100%;
+            border-collapse: collapse;
+            margin: 10px 0;
+        }
+
+        .reveal table th {
+            background-color: rgba(255, 255, 255, 0.08);
+            color: var(--accent-green);
+            font-weight: 600;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+            padding: 8px 10px;
+        }
+
+        .reveal table td {
+            padding: 8px 10px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        /* Header / Footer layout */
+        .slide-footer {
+            position: absolute;
+            bottom: -50px;
+            left: 0;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.4em;
+            color: var(--text-muted);
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            padding-top: 10px;
+        }
+
+        /* Progress indicator / background decorations */
+        .bg-gradient-radial {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 80% 20%, rgba(255, 112, 67, 0.04) 0%, transparent 50%),
+                        radial-gradient(circle at 10% 80%, rgba(0, 188, 212, 0.04) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        /* Lightbox overlay style */
+        .lightbox-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(10, 12, 16, 0.95);
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+            cursor: zoom-out;
+            backdrop-filter: blur(8px);
+        }
+
+        .lightbox-image {
+            max-width: 90%;
+            max-height: 90%;
+            border-radius: 8px;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            background: white; /* Keep white plot backgrounds clean */
+            padding: 10px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8);
+            object-fit: contain;
+        }
+
+        /* Cursor helper on plots */
+        .plot-container {
+            cursor: zoom-in;
+        }
+    </style>
+</head>
+<body>
+    <div class="reveal">
+        <div class="bg-gradient-radial"></div>
+        <div class="slides">
+
+            <!-- SLIDE 1: TITLE SLIDE -->
+            <section data-background-color="#0a0c10">
+                <div style="margin-top: 40px;">
+                    <h1 style="margin-top: 15px; margin-bottom: 20px; font-size: 2.5em; line-height: 1.1;">CO₂ Dynamics in a Mofette</h1>
+                    <h3 style="font-size: 1.4em; color: var(--text-muted); font-weight: 300; margin-bottom: 50px;">Measurement, Modeling & DSP Analysis</h3>
+                </div>
+                
+                <div class="glass-card" style="margin: 0 auto; max-width: 800px; text-align: center; border-color: rgba(255, 112, 67, 0.25);">
+                    <p style="font-size: 0.75em; margin: 0; font-weight: 600; color: #ffffff;"><span style="color: var(--accent-green);">Research by:</span> Attila Gergely, Alexandru Szakács, Ágnes Gál, Zoltán Neda</p>
+                    <p style="font-size: 0.75em; margin: 8px 0 0 0; font-weight: 600; color: #ffffff;"><span style="color: var(--accent-blue);">Project by:</span> Arthur Andreescu, Lucian Popescu, Apor Szakács</p>
+                    <p style="font-size: 0.6em; margin: 10px 0 0 0; color: var(--text-muted);">Digital Signal Processing | Covasna, Romania</p>
+                </div>
+
+                <aside class="notes">
+                    Welcome to the presentation. Today we are presenting the measurements and modeling of carbon dioxide dynamics within a natural mofette (gas vent) located in Covasna, Romania. We'll explore the experimental remote sensing setup and dive deep into the digital signal processing (DSP) techniques used to uncover diurnal, seasonal, and environmental patterns in the gas emissions.
+                </aside>
+            </section>
+
+            <!-- SLIDE 2: GEOLOGICAL & TECTONIC CONTEXT (NEW INTRO) -->
+            <section>
+                <h2>Tectonic & Volcanic Activity</h2>
+                <div class="grid-2-left">
+                    <div class="glass-card">
+                        <h3>Geological Setting</h3>
+                        <ul>
+                            <li><strong>Volcanic Arc:</strong> Youngest volcanic chain in Europe, active with post-volcanic degassing.</li>
+                            <li><strong>Ciomadul Volcano:</strong> Youngest regional volcanic center (~30k years ago), retaining deep magma heat.</li>
+                            <li><strong>Tectonic Junction:</strong> Intersection of three micro-plates drives deep crustal faulting.</li>
+                            <li><strong>CO₂ Origin:</strong> Subduction slab detachment in the Vrancea zone feeds superficial mofettes.</li>
+                        </ul>
+                    </div>
+                    <div style="display: flex; flex-direction: column; gap: 10px; align-items: center; justify-content: center;">
+                        <div class="plot-container" style="padding: 4px;">
+                            <img class="plot-image" src="resources/romania_geographic_map.png" alt="Geographic Map of Romania" style="max-height: 220px;">
+                        </div>
+                        <div class="plot-container" style="padding: 4px;">
+                            <img class="plot-image" src="resources/romania_tectonic_plates.png" alt="Tectonic Plates of Romania" style="max-height: 220px;">
+                        </div>
+                    </div>
+                </div>
+
+                <aside class="notes">
+                    Before looking at the gas sensors, let's look at the geological engine behind this mofette. Romania's Eastern Carpathians house the youngest volcanic arc in Europe, specifically the Ciomadul volcano which lies close to Covasna. The region sits at a complex tectonic junction where three plates meet. Tectonic slab-detachment in the deep Vrancea zone opens up pathways for deep, mantle-derived CO2 gas to ascend to the surface, creating natural gas pools or mofettes.
+                </aside>
+            </section>
+
+            <!-- SLIDE 3: WHAT IS A MOFETTE? -->
+            <section>
+                <h2>What is a Mofette?</h2>
+                <div class="grid-2-left">
+                    <div class="glass-card">
+                        <h3>Natural Venting</h3>
+                        <ul>
+                            <li>Volcanic vent emitting carbon dioxide (<span class="highlight-green">CO₂</span>) and other dry gases.</li>
+                            <li>Common in post-volcanic regions like the <span class="highlight-blue">Eastern Carpathians</span> (Romania).</li>
+                            <li>Creates extreme microclimates and heavy gas pooling due to high CO₂ density relative to ambient air.</li>
+                            <li>Serves as a natural laboratory for studying gas flow dynamics and carbon capture modeling.</li>
+                        </ul>
+                    </div>
+                    <div style="display: flex; flex-direction: column; gap: 10px; align-items: center; justify-content: center;">
+                        <div class="plot-container" style="padding: 4px;">
+                            <img class="plot-image" src="resources/mofette_natural.png" alt="Natural Mofette" style="max-height: 220px;">
+                        </div>
+                        <div class="plot-container" style="padding: 4px;">
+                            <img class="plot-image" src="resources/mofette_building.png" alt="Mofette Station" style="max-height: 220px;">
+                        </div>
+                    </div>
+                </div>
+
+                <aside class="notes">
+                    Let's explain what a mofette is. A mofette is a dry volcanic vent that releases carbon dioxide. Because CO2 is heavier than air, it pools in ground depressions, creating extreme microclimates and asphyxiation zones. Here we see both a natural open mofette vent and a built/enclosed mofette monitoring station in Covasna. They act as perfect natural labs for studying gas flow and stratification.
+                </aside>
+            </section>
+
+            <!-- SLIDE 4: EXPERIMENTAL CAMPAIGN & DATA -->
+            <section>
+                <h2>Experimental Campaign & Input Data</h2>
+                <div class="grid-2">
+                    <div class="glass-card">
+                        <h3>Campaign Details</h3>
+                        <ul>
+                            <li><strong>Location:</strong> Covasna, Romania.</li>
+                            <li><strong>Monitoring Period:</strong> Apr 8, 2022 to Nov 7, 2022.</li>
+                            <li><strong>Data Span:</strong> <span class="highlight-green">200 days</span> of active measurements.</li>
+                            <li><strong>Total Data points:</strong> <span class="highlight-blue">17.3 Million</span> recordings.</li>
+                            <li><strong>Resolution:</strong> Continuous profiling at ~1 sample/second.</li>
+                        </ul>
+                    </div>
+                    <div class="glass-card">
+                        <h3>Input Data Files</h3>
+                        <ul>
+                            <li><strong>Raw ASCII Text:</strong> `new_device_column1.txt` (~6 GB raw text data, alternating lines of timestamps and sensor values).</li>
+                            <li><strong>Processed CSV:</strong> `data.csv` (~6 GB standard table with headers).</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <aside class="notes">
+                    The campaign in Covasna produced a massive amount of data. The raw output was a 6 GB text file containing 17.3 million samples. For analysis, this was converted into a standard 6 GB CSV table. During cleaning, invalid readings were filtered out, and the data was interpolated to a uniform 1-minute grid, giving us 200 days of active, clean time-series data.
+                </aside>
+            </section>
+
+            <!-- SLIDE 3: HARDWARE & SENSOR SETUP -->
+            <section>
+                <h2>Sensor Setup & Profiling</h2>
+                <div class="grid-2">
+                    <div class="glass-card">
+                        <h3>Custom Profiling Array</h3>
+                        <ul>
+                            <li><strong>Main Stack:</strong> 20 vertical <span class="highlight-green">STC31</span> sensors spaced 5 cm apart (0 to 95 cm height) for profiling.</li>
+                            <li><strong>Side Tube:</strong> 4 additional <span class="highlight-blue">STC31</span> sensors spaced 10 cm apart.</li>
+                            <li><strong>Meteorology:</strong> 2 BMP280 sensors (Barometric Pressure & Temperature) at top & bottom.</li>
+                            <li><strong>Humidity:</strong> 2 DHT11 humidity sensors at top & bottom.</li>
+                        </ul>
+                    </div>
+                    <div class="glass-card" style="padding: 15px;">
+                        <h3 style="margin-bottom: 10px;">Sensor Configuration</h3>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Sensor Group</th>
+                                    <th>Type</th>
+                                    <th>Count</th>
+                                    <th>Spacing</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Main Stack (CO₂)</td>
+                                    <td>STC31</td>
+                                    <td>20</td>
+                                    <td>5 cm</td>
+                                </tr>
+                                <tr>
+                                    <td>Side Tube (CO₂)</td>
+                                    <td>STC31</td>
+                                    <td>4</td>
+                                    <td>10 cm</td>
+                                </tr>
+                                <tr>
+                                    <td>Barometric Pressure</td>
+                                    <td>BMP280</td>
+                                    <td>2</td>
+                                    <td>Top / Bottom</td>
+                                </tr>
+                                <tr>
+                                    <td>Relative Humidity</td>
+                                    <td>DHT11</td>
+                                    <td>2</td>
+                                    <td>Top / Bottom</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <aside class="notes">
+                    The hardware setup was specifically built to capture vertical gas concentration gradients. Since CO2 is heavier than air, it builds up in stratified layers. By placing 20 thermal-conductivity-based STC31 sensors in a vertical stack spaced 5 cm apart, we can map the exact boundary layer where CO2 transitions to ambient air. Ambient pressure, humidity, and temperature sensors were installed at the top and bottom to monitor the environmental boundary conditions.
+                </aside>
+            </section>
+
+            <!-- SLIDE 4: EXPLORATORY DATA ANALYSIS -->
+            <section>
+                <h2>Exploratory Data Analysis</h2>
+                <div class="grid-2-left">
+                    <div class="glass-card">
+                        <h3>Raw Time Series Insights</h3>
+                        <ul>
+                            <li><strong>Vertical Stratification:</strong> Lower stack sensors (0-30 cm) stay saturated at ~100% CO₂.</li>
+                            <li><strong>Active Boundary Zone:</strong> Middle sensors (40-60 cm) exhibit massive <span class="highlight-green">diurnal oscillations</span> (daily cycles).</li>
+                            <li><strong>Emission Bursts:</strong> Sharp spikes in upper sensors correspond to brief high-intensity vents.</li>
+                            <li><strong>Seasonal Shift:</strong> Summer periods show wider daily fluctuation envelopes compared to spring/autumn.</li>
+                        </ul>
+                    </div>
+                    <div class="plot-container">
+                        <img class="plot-image" src="../plots/01_CO2_main_stack.png" alt="CO2 main stack plot">
+                        <div class="text-small" style="text-align: center; margin-top: 5px;">Figure 1: 7-Month Raw CO₂ Profiling (20 Sensors)</div>
+                    </div>
+                </div>
+
+                <aside class="notes">
+                    Looking at the raw time series in Figure 1, we see the 20 vertical sensors. The bottom sensors are locked at nearly 100% CO2, indicating a permanent blanket of gas in the mofette. The upper sensors are mostly ambient air. The middle region (around 50cm, represented by sensor 10) is the critical dynamic boundary layer, showing massive daily oscillations. This area behaves like a breathing lung, expanding and contracting.
+                </aside>
+            </section>
+
+            <!-- SLIDE 5: WELCH'S PSD PERIODICITY -->
+            <section>
+                <h2>Frequency Domain: Welch's PSD</h2>
+                <div class="grid-2-left">
+                    <div class="glass-card">
+                        <h3>Power Spectral Density</h3>
+                        <ul>
+                            <li>Analyzed using <span class="highlight-green">Welch's Method</span> (7-day window segment, 50% overlap).</li>
+                            <li>Successfully isolates periodic signals from high-frequency sensor noise.</li>
+                            <li>Reveals a highly dominant peak at the <span class="highlight-orange">24-hour period</span> (diurnal cycle).</li>
+                            <li>Secondary harmonics are visible at <span class="highlight-blue">12-hour</span> and <span class="highlight-blue">8-hour</span> intervals, indicating non-sinusoidal distortions.</li>
+                        </ul>
+                    </div>
+                    <div class="plot-container">
+                        <img class="plot-image" src="../plots/dsp_01_PSD_welch.png" alt="Welch PSD Plot">
+                        <div class="text-small" style="text-align: center; margin-top: 5px;">Figure 2: Welch PSD of CO₂ (Sensor 10)</div>
+                    </div>
+                </div>
+
+                <aside class="notes">
+                    To mathematically confirm these cycles, we transformed the signal to the frequency domain. Using Welch's Power Spectral Density with a 7-day window to achieve good low-frequency resolution, we obtained the spectrum shown in Figure 2. The absolute dominant spike corresponds to exactly 24 hours. The presence of secondary peaks at 12 and 8 hours indicates that the daily cycle is not a pure sine wave, but has sharper, asymmetric transitions.
+                </aside>
+            </section>
+
+            <!-- SLIDE 6: FFT MAGNITUDE SPECTRUM -->
+            <section>
+                <h2>Direct Frequency Spectrum (FFT)</h2>
+                <div class="grid-2-left">
+                    <div class="glass-card">
+                        <h3>Fourier Transform Analysis</h3>
+                        <ul>
+                            <li>Calculated using the <span class="highlight-green">Fast Fourier Transform (FFT)</span> on detrended data.</li>
+                            <li>Signals are mapped to uniform 1-minute time grids via linear interpolation to fix sampling jitter.</li>
+                            <li>Strong magnitude spike at <span class="highlight-orange">f = 0.0417 cycles/hour</span> (1/24 h⁻¹).</li>
+                            <li>Proves the physical mechanism driving mofette gas expansion is strictly tied to solar/diurnal cycles.</li>
+                        </ul>
+                    </div>
+                    <div class="plot-container">
+                        <img class="plot-image" src="../plots/dsp_02_FFT_spectrum.png" alt="FFT Spectrum Plot">
+                        <div class="text-small" style="text-align: center; margin-top: 5px;">Figure 3: FFT Magnitude Spectrum</div>
+                    </div>
+                </div>
+
+                <aside class="notes">
+                    Complementing the PSD, a direct FFT of the detrended 1-minute interpolated data was performed. In Figure 3, we see the raw magnitude spectrum. Again, the 24-hour cycle stands out massively at 0.0417 cycles per hour. The low-frequency region is highly resolved, confirming that diurnal forcing is the primary periodic engine of the system.
+                </aside>
+            </section>
+
+            <!-- SLIDE 7: SEASONAL TRENDS (LOWPASS) -->
+            <section>
+                <h2>Seasonal Trends: Lowpass Filter</h2>
+                <div class="grid-2-left">
+                    <div class="glass-card">
+                        <h3>Lowpass Butterworth Filter</h3>
+                        <ul>
+                            <li>Designed a 3rd-order <span class="highlight-green">Butterworth Lowpass Filter</span>.</li>
+                            <li><strong>Cutoff Period:</strong> 3 days (cutoff frequency ≈ 3.86 × 10⁻⁶ Hz).</li>
+                            <li>Implemented using zero-phase filtering (`sosfiltfilt`) to prevent time lag shifts.</li>
+                            <li>Removes all daily fluctuations, isolating the **long-term seasonal trend** (Spring → Summer → Autumn).</li>
+                        </ul>
+                    </div>
+                    <div class="plot-container">
+                        <img class="plot-image" src="../plots/dsp_03_lowpass_trend.png" alt="Lowpass Filter Plot">
+                        <div class="text-small" style="text-align: center; margin-top: 5px;">Figure 4: Raw CO₂ vs. 3-Day Lowpass Trend</div>
+                    </div>
+                </div>
+
+                <aside class="notes">
+                    To study the long-term patterns, we designed a Butterworth lowpass filter with a 3-day cutoff period. We used scipy's dual-pass `sosfiltfilt` function to ensure zero phase distortion, meaning the output is not shifted in time. Figure 4 shows the result: the red line isolates the seasonal base level. We see that the average CO2 level at 50 cm rises in the summer and drops in the autumn, correlating with ambient geological heating and regional barometric seasonal trends.
+                </aside>
+            </section>
+
+            <!-- SLIDE 8: DAILY OSCILLATION (BANDPASS) -->
+            <section>
+                <h2>Isolating the Daily Cycle: Bandpass</h2>
+                <div class="grid-2-left">
+                    <div class="glass-card">
+                        <h3>Bandpass Butterworth Filter</h3>
+                        <ul>
+                            <li>Isolates the 24-hour oscillation by rejecting both low-frequency trends and high-frequency noise.</li>
+                            <li><strong>Passband Range:</strong> 18h to 30h periods (cutoff frequencies of 1.54 × 10⁻⁵ Hz to 9.26 × 10⁻⁶ Hz).</li>
+                            <li>A zoomed 2-week window (Figure 5, bottom) reveals a clean, highly regular, sinusoidal diurnal breathing pattern.</li>
+                        </ul>
+                    </div>
+                    <div class="plot-container">
+                        <img class="plot-image" src="../plots/dsp_04_bandpass_daily.png" alt="Bandpass Filter Plot">
+                        <div class="text-small" style="text-align: center; margin-top: 5px;">Figure 5: Isolated Diurnal Cycle (Full & Zoomed)</div>
+                    </div>
+                </div>
+
+                <aside class="notes">
+                    Next, we wanted to see the pure diurnal cycle without seasonal trends. We designed a Butterworth bandpass filter centered on the 24-hour period, with cutoffs at 18 hours and 30 hours. In Figure 5, the top pane shows the isolated signal over the full 7 months. The bottom pane shows a 2-week zoom. The blue line represents the raw detrended data, and the green line is the bandpass output. It reveals an incredibly stable, regular wave.
+                </aside>
+            </section>
+
+            <!-- SLIDE 9: SPECTROGRAM OVER TIME -->
+            <section>
+                <h2>Spectrogram: Time-Frequency View</h2>
+                <div class="grid-2-left">
+                    <div class="glass-card">
+                        <h3>Spectrogram Insights</h3>
+                        <ul>
+                            <li>Computed with a 7-day sliding window moving in 1-day steps.</li>
+                            <li>Plots the strength of frequencies (Y-axis) against the 7-month calendar (X-axis).</li>
+                            <li>The white dashed line indicates the **24-hour period**.</li>
+                            <li>Shows that the 24h cycle is **highly active throughout the year**, but intensifies in late summer (Aug-Sep), indicating solar/temperature dependency.</li>
+                        </ul>
+                    </div>
+                    <div class="plot-container">
+                        <img class="plot-image" src="../plots/dsp_05_spectrogram.png" alt="Spectrogram Plot">
+                        <div class="text-small" style="text-align: center; margin-top: 5px;">Figure 6: 7-Month Spectrogram (6h to 72h Periods)</div>
+                    </div>
+                </div>
+
+                <aside class="notes">
+                    Is this 24-hour cycle constant, or does it change? To find out, we generated a spectrogram, shown in Figure 6. The horizontal axis is time (7 months), and the vertical axis is the period in hours. The color intensity represents energy. You can see a bright, continuous horizontal strip at 24 hours. The intensity is strongest in August and September, which indicates that summer conditions amplify the diurnal breathing amplitude of the mofette.
+                </aside>
+            </section>
+
+            <!-- SLIDE 10: ENVIRONMENTAL DRIVERS -->
+            <section>
+                <h2>Drivers: Pressure & Temperature</h2>
+                <div class="grid-2-left">
+                    <div class="glass-card">
+                        <h3>Cross-Correlation Analysis</h3>
+                        <ul>
+                            <li><strong>Barometric Pressure (Figure 7):</strong> Strong negative correlation (<span class="highlight-orange">r = -0.42</span>) at a lag of ~0 hours. Rising air pressure forces gas down into the vent; dropping pressure pulls gas out.</li>
+                            <li><strong>Ambient Temperature (Figure 8):</strong> Positive correlation (<span class="highlight-green">r = +0.28</span>) at a lag of ~3 hours. Ambient temperature leads CO₂ gas expansion, indicating thermal drive.</li>
+                        </ul>
+                    </div>
+                    <div class="double-plots">
+                        <div class="plot-container">
+                            <img class="plot-image" src="../plots/dsp_06_xcorr_pressure.png" alt="Pressure Correlation">
+                            <div class="text-small" style="text-align: center; margin-top: 5px;">Figure 7: X-Corr: CO₂ vs. Pressure</div>
+                        </div>
+                        <div class="plot-container">
+                            <img class="plot-image" src="../plots/dsp_07_xcorr_temperature.png" alt="Temperature Correlation">
+                            <div class="text-small" style="text-align: center; margin-top: 5px;">Figure 8: X-Corr: CO₂ vs. Temp</div>
+                        </div>
+                    </div>
+                </div>
+
+                <aside class="notes">
+                    What environmental factors drive this breathing? We ran cross-correlation between CO2 and atmospheric pressure, and CO2 and ambient temperature. Pressure shows a strong negative correlation at 0 hours lag. When atmospheric pressure drops, it acts like a pump, drawing CO2 up and out. Ambient temperature shows a positive correlation peaking at a 3-hour lag. Sunlight warms the ground and air, causing thermal expansion that drives gas upward after a 3-hour thermal inertia delay.
+                </aside>
+            </section>
+
+            <!-- SLIDE 11: CONCLUSIONS & MODELING -->
+            <section data-background-color="#0a0c10">
+                <h2>Conclusions & Modeling Value</h2>
+                <div class="grid-2">
+                    <div class="glass-card">
+                        <h3>Key Scientific Findings</h3>
+                        <ul>
+                            <li>Confirmed **stratified CO₂ gas layering** in the mofette stack.</li>
+                            <li>Established **barometric pressure** as the primary immediate physical driver of gas rise.</li>
+                            <li>Identified a **diurnal 24h rhythm** driven by temperature cycles with a **3-hour thermal lag**.</li>
+                        </ul>
+                    </div>
+                    <div class="glass-card">
+                        <h3>Future Directions</h3>
+                        <ul>
+                            <li><strong>Predictive Models:</strong> Training neural networks (LSTMs) or physical diffusion models using pressure/temperature inputs.</li>
+                            <li><strong>Safety Monitoring:</strong> Building alert systems for dangerous CO₂ levels based on barometric pressure forecasts.</li>
+                            <li><strong>Volcanic Activity Indicators:</strong> Tracking changes in mofette breathing rates to detect deep crustal shifts.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <aside class="notes">
+                    In conclusion, our study successfully mapped mofette dynamics using vertical profiling and digital signal processing. We confirmed that the mofette's "breathing" is driven directly by barometric pressure changes and diurnal temperature cycles. This data provides a solid foundation for predictive safety alert systems and geological volcanic monitoring.
+                </aside>
+            </section>
+
+            <!-- SLIDE 12: THANK YOU & DISCUSSION -->
+            <section data-background-color="#0a0c10">
+                <div style="margin-top: 40px;">
+                    <span style="font-size: 0.9em; font-weight: 600; letter-spacing: 2px; color: var(--accent-green); text-transform: uppercase;">Conclusion</span>
+                    <h1 style="margin-top: 20px; margin-bottom: 40px; font-size: 2.5em; line-height: 1.2;">Thank You!</h1>
+                    <h3 style="font-size: 1.4em; color: var(--text-muted); font-weight: 300; margin-bottom: 50px;">Questions & Discussion</h3>
+                </div>
+                
+                <div class="glass-card" style="margin: 0 auto; max-width: 800px; text-align: center; border-color: rgba(255, 112, 67, 0.25);">
+                    <p style="font-size: 0.7em; margin: 0; font-weight: 600; color: #ffffff;"><span style="color: var(--accent-green);">Research:</span> Attila Gergely, Alexandru Szakács, Ágnes Gál, Zoltán Neda</p>
+                    <p style="font-size: 0.7em; margin: 6px 0 0 0; font-weight: 600; color: #ffffff;"><span style="color: var(--accent-blue);">Project:</span> Arthur Andreescu, Lucian Popescu, Apor Szakács</p>
+                </div>
+
+                <aside class="notes">
+                    Thank you very much for your time and attention. I am now open to any questions or comments you might have regarding the measurements, modeling, or DSP analysis of this mofette data.
+                </aside>
+            </section>
+
+        </div>
+    </div>
+
+    <!-- Lightbox overlay for full-screen plots -->
+    <div id="lightbox" class="lightbox-overlay">
+        <img id="lightbox-img" class="lightbox-image" src="" alt="Zoomed Plot">
+    </div>
+
+    <!-- Reveal.js scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.5.0/reveal.js"></script>
+    <script>
+        // Initialize Reveal.js
+        Reveal.initialize({
+            hash: true,
+            controls: true,
+            progress: true,
+            center: true,
+            transition: 'slide',
+            backgroundTransition: 'fade',
+            pdfMaxPagesPerSlide: 1,
+            
+            // Set standard presentation base dimensions & spacing to guarantee fit
+            width: 1200,
+            height: 750,
+            margin: 0.05,
+            minScale: 0.2,
+            maxScale: 2.0,
+            
+            plugins: [ ]
+        });
+
+        // Lightbox logic
+        const lightbox = document.getElementById('lightbox');
+        const lightboxImg = document.getElementById('lightbox-img');
+        
+        document.querySelectorAll('.plot-image').forEach(img => {
+            img.addEventListener('click', (e) => {
+                e.stopPropagation(); // Prevent slide change or other click events
+                lightboxImg.src = img.src;
+                lightbox.style.display = 'flex';
+            });
+        });
+        
+        lightbox.addEventListener('click', () => {
+            lightbox.style.display = 'none';
+            lightboxImg.src = '';
+        });
+
+        // Close lightbox on Escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && lightbox.style.display === 'flex') {
+                lightbox.style.display = 'none';
+                lightboxImg.src = '';
+            }
+        });
+    </script>
+</body>
+</html>
