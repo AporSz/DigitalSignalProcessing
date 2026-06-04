@@ -14,7 +14,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from utils.data_utils import get_data_by_minute
 
 
-PLOT_DIR = 'plots'
+PLOT_DIR = '../plots'
 DPI = 300
 FIGSIZE_SINGLE = (16, 7)
 FIGSIZE_COMBO = (16, 12)
@@ -343,7 +343,7 @@ if __name__ == '__main__':
 
     # Load data (every 60th sample = ~1 per minute)
     print("\nLoading data...")
-    data = get_data_by_minute('data/1_CO2_raw_data/data.csv')
+    data = get_data_by_minute('../data/1_CO2_raw_data/data.csv')
     dates = timestamps_to_dates(data["Timestamp"])
     print(f"  Loaded {len(dates):,} data points")
     print(f"  Time range: {dates[0].strftime('%Y-%m-%d %H:%M')} to {dates[-1].strftime('%Y-%m-%d %H:%M')}")

@@ -5,8 +5,8 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from utils.data_utils import convert_txt_to_csv
 
-input_file = os.path.join('data', '1_CO2_raw_data', 'new_device_column1.txt')
-output_file = os.path.join('data', '1_CO2_raw_data', 'data.csv')
+input_file = os.path.join('../data', '1_CO2_raw_data', 'new_device_column1.txt')
+output_file = os.path.join('../data', '1_CO2_raw_data', 'data.csv')
 
 if not os.path.exists(input_file):
     print(f"ERROR: Input file not found: {input_file}")

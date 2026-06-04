@@ -3,7 +3,7 @@ import os
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
-path_txt = os.path.join('data', '1_CO2_raw_data', 'new_device_column1.txt')
+path_txt = os.path.join('../data', '1_CO2_raw_data', 'new_device_column1.txt')
 
 # Categories of invalid entries
 categories = {
