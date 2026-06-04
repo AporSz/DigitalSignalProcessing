@@ -42,7 +42,13 @@ plt.rcParams.update({
     'lines.linewidth': 0.4,
 })
 
-MAIN_HEIGHTS_CM = [i * 5 for i in range(20)]
+# Custom yellow-to-blue colormap (bottom sensors = yellow = high CO2, top = blue = low CO2)
+BLUE_YELLOW_CMAP = mcolors.LinearSegmentedColormap.from_list(
+    'yellow_blue',
+    ['#FFAB00', '#FFD600', '#FFEE58', '#66BB6A',
+     '#42A5F5', '#1565C0', '#0D47A1', '#081D58'],
+    N=256
+)
 
 
 def timestamps_to_dates(timestamps):
@@ -69,7 +75,7 @@ def save_figure(fig, name):
 # ============================================================
 if __name__ == '__main__':
     print("=" * 60)
-    print(f"  Temperature Plot — First {N:,} Data Points")
+    print(f"  CO2 Main Stack Plot — First {N:,} Data Points")
     print("=" * 60)
 
     print("\nLoading data...")
@@ -78,67 +84,30 @@ if __name__ == '__main__':
     print(f"  Loaded {len(dates):,} data points")
     print(f"  Time range: {dates[0].strftime('%Y-%m-%d %H:%M')} to {dates[-1].strftime('%Y-%m-%d %H:%M')}")
 
-    # ── Figure 1: Main Stack Temperature (20 sensors) ──
-    print("\n  [1/3] Temperature Main Stack (20 sensors)...")
-    fig1, ax1 = plt.subplots(figsize=(16, 7))
+    print("\n  Plotting CO2 Main Stack (20 sensors)...")
+    fig, ax = plt.subplots(figsize=(16, 7))
 
-    cmap = plt.colormaps['coolwarm']
     for i in range(20):
-        color = cmap(i / 19)
-        ax1.plot(dates, data["Temperature_main"][i], color=color, linewidth=0.3, alpha=0.85)
+        color = BLUE_YELLOW_CMAP(i / 19)
+        ax.plot(dates, data["CO2_main"][i], color=color, linewidth=0.3, alpha=0.85)
 
-    ax1.set_title(f'Temperature — Main Stack (20 sensors) — First {N:,} samples')
-    ax1.set_xlabel('Date')
-    ax1.set_ylabel('Temperature (°C)')
-    setup_date_axis(ax1)
+    ax.set_title(r'CO$_2$ Concentration — Main Stack (20 sensors) — First {:,} samples'.format(N))
+    ax.set_xlabel('Date')
+    ax.set_ylabel(r'CO$_2$ Concentration (%)')
+    setup_date_axis(ax)
 
     # Colorbar
     norm = mcolors.Normalize(vmin=0, vmax=95)
-    sm = cm.ScalarMappable(cmap=cmap, norm=norm)
+    sm = cm.ScalarMappable(cmap=BLUE_YELLOW_CMAP, norm=norm)
     sm.set_array([])
-    cbar = fig1.colorbar(sm, ax=ax1, pad=0.02, aspect=30)
+    cbar = fig.colorbar(sm, ax=ax, pad=0.02, aspect=30)
     cbar.set_label('Sensor height (cm)', fontsize=12)
 
-    save_figure(fig1, 'temp_1M_main_stack')
-
-    # ── Figure 2: Side Tube Temperature (4 sensors) ──
-    print("  [2/3] Temperature Side Tube (4 sensors)...")
-    fig2, ax2 = plt.subplots(figsize=(16, 7))
-
-    side_colors = ['#2196F3', '#4CAF50', '#FF9800', '#E91E63']
-    side_labels = ['Side 1 (top)', 'Side 2', 'Side 3', 'Side 4 (bottom)']
-    for i in range(4):
-        ax2.plot(dates, data["Temperature_side"][i], color=side_colors[i],
-                 linewidth=0.4, alpha=0.8, label=side_labels[i])
-
-    ax2.set_title(f'Temperature — Side Tube (4 sensors) — First {N:,} samples')
-    ax2.set_xlabel('Date')
-    ax2.set_ylabel('Temperature (°C)')
-    ax2.legend(loc='upper right', framealpha=0.9, edgecolor='#cccccc')
-    setup_date_axis(ax2)
-
-    save_figure(fig2, 'temp_1M_side_tube')
-
-    # ── Figure 3: Ambient Temperature (BMP280 top & bottom) ──
-    print("  [3/3] Ambient Temperature (top & bottom)...")
-    fig3, ax3 = plt.subplots(figsize=(16, 7))
-
-    ax3.plot(dates, data["Temperature_Top"], color='#C62828', linewidth=0.4,
-             alpha=0.8, label='Top sensor (BMP280)')
-    ax3.plot(dates, data["Temperature_Bottom"], color='#1565C0', linewidth=0.4,
-             alpha=0.8, label='Bottom sensor (BMP280)')
-
-    ax3.set_title(f'Ambient Temperature — Top & Bottom — First {N:,} samples')
-    ax3.set_xlabel('Date')
-    ax3.set_ylabel('Temperature (°C)')
-    ax3.legend(loc='upper right', framealpha=0.9, edgecolor='#cccccc')
-    setup_date_axis(ax3)
-
-    save_figure(fig3, 'temp_1M_ambient')
+    save_figure(fig, 'co2_1M_main_stack')
 
     print(f"\n{'=' * 60}")
-    print(f"  All 3 temperature figures saved to '{PLOT_DIR}/'")
-    print(f"  Displaying interactive plots — close windows when done.")
+    print(f"  Figure saved to '{PLOT_DIR}/'")
+    print(f"  Displaying interactive plot — close window when done.")
     print(f"{'=' * 60}")
 
     plt.show()
