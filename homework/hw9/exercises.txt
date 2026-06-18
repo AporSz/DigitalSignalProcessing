@@ -5,3 +5,5 @@ By taking advantage of LTI properties, a filter predictably alters the amplitude
 an input signal. Because filters are LTI systems, their exact behavior can be completely characterized by their impulse
 response in the time domain or their transfer function in the frequency domain.
 
+2. Explain the stability criterion for digital filters in the z-plane. What is the significance of the unit circle in this context?
+
