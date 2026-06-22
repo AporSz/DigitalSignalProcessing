@@ -10,8 +10,8 @@ from datetime import datetime, timezone
 import os
 import sys
 
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from utils.data_utils import load_csv
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from data_processing.loaders import load_csv
 
 # ============================================================
 # CONFIGURATION

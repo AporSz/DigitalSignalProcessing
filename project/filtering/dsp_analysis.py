@@ -27,8 +27,8 @@ from scipy import signal
 import os
 import sys
 
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from utils.data_utils import get_data_by_minute
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from data_processing.loaders import get_data_by_minute
 
 # ============================================================
 # CONFIGURATION

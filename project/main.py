@@ -1,22 +1,39 @@
-import matplotlib
-import matplotlib.pyplot as plt
+import sys
+import argparse
+import subprocess
 
-from project.utils.plot_utils import plot_sensor, plot_correlation, correlation_matrix
-from project.utils.data_utils import load, get_data_by_minute, load_csv
+def run_script(script_name):
+    print(f"\n[{script_name}] Starting...")
+    subprocess.run([sys.executable, script_name])
+    print(f"[{script_name}] Finished.\n")
 
-matplotlib.use('TkAgg')
+def main():
+    print("=" * 60)
+    print("  CO2 Mofette Dynamics — Main Entry Point")
+    print("=" * 60)
+    
+    parser = argparse.ArgumentParser(description="Run the DSP project scripts.")
+    parser.add_argument('--dsp', action='store_true', help='Run the main DSP analysis (filtering, Welch, spectrogram)')
+    parser.add_argument('--co2', action='store_true', help='Run the CO2 main stack heatmap')
+    parser.add_argument('--temp', action='store_true', help='Run the Temperature main stack heatmap')
+    parser.add_argument('--all', action='store_true', help='Run all scripts sequentially')
 
-# matplotlib.use('TkAgg')
+    args = parser.parse_args()
 
-N = 1000000
+    if not any([args.dsp, args.co2, args.temp, args.all]):
+        print("\nPlease select a script to run, or run all of them:\n")
+        parser.print_help()
+        print("\nExample: python main.py --all")
+        sys.exit(0)
 
-# sensor_values = load('data/1_CO2_raw_data/new_device_column1.txt', limit = N)
-# sensor_values = get_data_by_minute('data/1_CO2_raw_data/data.csv')
-sensor_values = load_csv('data/1_CO2_raw_data/data.csv', N)
+    if args.dsp or args.all:
+        run_script('filtering/dsp_analysis.py')
+    
+    if args.co2 or args.all:
+        run_script('plotting/plot_co2_1M.py')
 
-time = sensor_values["Timestamp"]
+    if args.temp or args.all:
+        run_script('plotting/plot_temperature_1M.py')
 
-# plot_sensor(sensor_values, time, "CO2_main", filtered = False, mark_period = "Month")
-
-plot_correlation(sensor_values, "Temperature_main", "Temperature_side")
-correlation_matrix(sensor_values, ["Temperature_main", "Temperature_side"])
+if __name__ == '__main__':
+    main()

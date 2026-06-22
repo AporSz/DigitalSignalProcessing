@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from scipy.signal import savgol_filter
 
-from project.utils.data_utils import load
+from data_processing.loaders import load
 
 def plot_filtered(time, values, color):
     smoothed = savgol_filter(values, 51, 3)
