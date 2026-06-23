@@ -1,5 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
+from scipy.signal import dbode
 
 N = 4096
 fs = 2048
@@ -51,4 +52,25 @@ plt.plot(freq, F, 'k')
 plt.stem(freq_good, Fgood, 'b:')
 plt.stem(freq_bad, Fbad, 'r--')
 plt.xlim([-15, 15])
+plt.show()
+
+recgood = np.zeros_like(t)
+recbad = np.zeros_like(t)
+
+for i in range(Ngood):
+    shifted = (t - t_good[i]) / dgood
+    shifted = np.sinc(shifted)
+
+    recgood += f_good_samp[i] * shifted
+
+for i in range(Nbad):
+    shifted = (t - t_bad[i]) / dbad
+    shifted = np.sinc(shifted)
+
+    recbad += f_bad_samp[i] * shifted
+
+plt.plot(t, f, linewidth=5, alpha=0.5)
+plt.plot(t, recgood)
+plt.plot(t, recbad, 'k--')
+
 plt.show()
