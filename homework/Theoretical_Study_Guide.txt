@@ -1,0 +1,64 @@
+=== HOMEWORK 10 (IIR Filters) ===
+
+Q2. What is the passband of a filter? How is it different from the stopband?
+A: The passband is the frequency range where the filter allows signals to pass through with minimal attenuation (gain near 1). The stopband is the frequency range where the filter heavily attenuates the signal (gain near 0). They are separated by the transition band.
+
+Q3. What do we mean by the cut-off frequency of a filter?
+A: The cut-off frequency is the boundary point between the passband and the transition band. It is typically defined as the frequency where the signal power drops to half its passband value (the -3 dB point).
+
+Q4. Explain the concept of rolloff in filter design.
+A: Rolloff describes the steepness of the transition band between the passband and stopband. It is measured in decibels per decade (dB/decade) or dB/octave. A higher (steeper) rolloff indicates a filter that more aggressively rejects frequencies just outside the passband, approaching an ideal "brick-wall" shape.
+
+Q6. Explain the significance of the order of a filter. How does it relate to the number of poles in the z-domain?
+A: The filter order dictates the complexity of the filter and the steepness of its rolloff. Higher-order filters require more computational resources but provide sharper transitions. For IIR filters, the order corresponds directly to the number of poles (and often zeros) in the z-domain transfer function.
+
+Q7. What is ripple in the context of filter design?
+A: Ripple refers to the small, periodic oscillations in the amplitude response of a filter. Passband ripple causes slight distortions in the amplitude of passed frequencies, while stopband ripple means some rejected frequencies might leak through more than others. It is often a trade-off for a steeper transition band.
+
+Q12. What is the significance of the Nyquist frequency in digital filter design?
+A: The Nyquist frequency is the absolute maximum frequency a digital filter can process, equal to exactly half the sampling rate (fs/2). Frequencies above this limit cause aliasing. In the z-plane, the Nyquist frequency corresponds to z = -1 (the leftmost edge of the unit circle).
+
+Q14. What is a notch filter? What parameters are critical?
+A: A notch filter is a highly specific band-stop filter designed to eliminate a single, very narrow frequency band while leaving all others untouched. The critical parameters are the notch frequency (the target to eliminate), the notch depth (how heavily it attenuates), and the quality factor (Q) or bandwidth (how wide the rejected band is).
+
+Q24. Explain the impulse-invariant method for designing IIR filters.
+A: The impulse-invariant method converts an analog filter to a digital filter by perfectly sampling the analog filter's time-domain impulse response. Its main advantage is that it perfectly preserves the time-domain impulse response shape. Its main disadvantage is that it suffers from severe high-frequency aliasing, making it unsuitable for high-pass or band-stop filters.
+
+
+=== HOMEWORK 11 (FIR Filters) ===
+
+Q2. Compare FIR and IIR filters.
+A: FIR filters have a finite impulse response, are always stable, and can easily achieve perfectly linear phase, but they require high orders (more computation) to achieve sharp cutoffs. IIR filters have an infinite response, use feedback, and can achieve very sharp cutoffs with much lower orders, but they can become unstable and introduce non-linear phase distortion.
+
+Q3. In what scenarios would you prefer FIR over IIR?
+A: Prefer FIR when signal shape preservation is absolutely critical (e.g., audio, ECG) and phase distortion cannot be tolerated. Prefer IIR when low latency and low computational power are required, and phase distortion is less important.
+
+Q8. Why does truncating the ideal sinc impulse response introduce ripples?
+A: Truncating an infinite sequence in the time domain is mathematically equivalent to multiplying it by a rectangular window. In the frequency domain, this causes a convolution with a sinc function, spreading energy into side-lobes. This phenomenon, known as the Gibbs effect, manifests as oscillating ripples near the cutoff frequency.
+
+Q9. Explain why an ideal low-pass filter cannot be both causal and finite length.
+A: An ideal "brick-wall" low-pass filter in the frequency domain corresponds to a sinc function spanning infinitely from -infinity to +infinity in the time domain. Because it extends infinitely into the past (t < 0), it requires knowledge of future samples before they arrive, making it strictly non-causal and impossible to implement in real-time.
+
+Q12. Why are FIR filters always BIBO stable?
+A: Bounded-Input Bounded-Output (BIBO) stability requires the sum of the absolute values of the impulse response to be finite. Since an FIR filter has a strictly finite number of coefficients, their sum is inherently finite. Because they lack feedback loops (no poles outside the origin), their outputs can never grow to infinity.
+
+Q13. Why does increasing the filter order improve the sharpness of the transition band?
+A: Increasing the filter order adds more terms (coefficients) to the polynomial equation governing the filter. In the time domain, this means a longer impulse response that better approximates an infinite ideal filter. In the frequency domain, these extra degrees of freedom allow the math to more aggressively cancel out frequencies, resulting in a steeper, sharper drop-off.
+
+
+=== HOMEWORK 12 (Fourier & Wavelet Analysis) ===
+
+Q4. Describe the purpose of the Short Time Fourier Transform (STFT).
+A: The STFT is used to analyze non-stationary signals whose frequency content changes over time. By sliding a short time window across the signal and taking the FFT of each segment, it provides a 2D time-frequency representation (a spectrogram), showing both what frequencies are present and exactly when they occur.
+
+Q5. What is the Heisenberg Uncertainty Principle in the context of signal processing?
+A: It states that a signal cannot be precisely localized in both the time and frequency domains simultaneously. You face a direct trade-off: using a short time window gives excellent time resolution but poor frequency resolution, while a long time window gives excellent frequency resolution but blurs the exact time at which events occurred.
+
+Q8. Explain the concept of vanishing moments in wavelet theory.
+A: A wavelet has N vanishing moments if it is orthogonal to polynomials up to degree N-1. Practically, this means the wavelet transform will filter out (result in zero coefficients for) any smooth, polynomial-like background trends in the signal up to that degree, allowing it to easily isolate abrupt changes or singularities.
+
+Q10. What is the main purpose of wavelet transform in signal processing?
+A: The wavelet transform provides multi-resolution time-frequency analysis, solving the fixed-window problem of the STFT. It uses short windows for high-frequency components and long windows for low-frequency components, allowing it to accurately capture both long-term trends and sudden, sharp transients (like spikes) in a signal.
+
+Q12. What is the difference between the Continuous Wavelet Transform (CWT) and the Discrete Wavelet Transform (DWT)?
+A: The CWT computes wavelet coefficients at every possible scale and time shift, creating a highly redundant, continuous 2D representation ideal for visual analysis. The DWT computes coefficients only at discrete, binary-scaled steps (powers of 2), resulting in a compact, non-redundant representation ideal for data compression and computationally efficient filtering.
