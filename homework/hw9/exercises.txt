@@ -1,9 +1,20 @@
 1. Explain the relationship between filters and linear time invariant systems.
-
-A filter is fundamentally a physical or mathematical implementation of a Linear Time-Invariant (LTI) system.
-By taking advantage of LTI properties, a filter predictably alters the amplitude and phase of specific frequencies in
-an input signal. Because filters are LTI systems, their exact behavior can be completely characterized by their impulse
-response in the time domain or their transfer function in the frequency domain.
+A filter is a specific application of a Linear Time-Invariant (LTI) system designed to modify or extract specific frequency components of a signal. Because LTI systems are completely characterized by their impulse response, filtering is performed mathematically by convolving the input signal with this impulse response. Essentially, any LTI system inherently acts as a filter by selectively amplifying or attenuating different frequencies according to its frequency response.
 
 2. Explain the stability criterion for digital filters in the z-plane. What is the significance of the unit circle in this context?
+For a digital filter to be BIBO (Bounded-Input Bounded-Output) stable, all of its poles must be located strictly inside the unit circle on the Z-plane. The unit circle represents the absolute boundary of stability, corresponding to the imaginary axis in the continuous S-plane. If any pole lies outside the unit circle, the system's impulse response will grow exponentially, making it unstable. Poles exactly on the unit circle result in a marginally stable system that oscillates infinitely.
 
+3. What is the relationship between the s-plane and the z-plane when analyzing digital filters? Explain the mapping from continuous to discrete systems.
+The S-plane is used to analyze continuous-time analog systems, while the Z-plane is used to analyze discrete-time digital systems. Through mappings like the Impulse Invariance or Bilinear Transform, the stable left half of the S-plane is mapped entirely into the inside of the unit circle on the Z-plane. Furthermore, the unstable right half of the S-plane maps outside the unit circle, and the vertical imaginary frequency axis ($j\omega$) maps exactly onto the perimeter of the unit circle itself.
+
+4. Explain the significance of poles and zeros in the context of the z-transform. How do they influence the behavior of digital filters? How can it be used to analyze the stability and frequency response of digital filters?
+Zeros represent the roots of the transfer function's numerator, while poles are the roots of the denominator. Poles cause the frequency response to spike (creating resonances), while zeros cause the frequency response to dip (attenuating or completely blocking specific frequencies). Analyzing pole locations instantly determines stability (they must be inside the unit circle), and the geometric arrangement of poles and zeros relative to the unit circle visually defines the filter's overall gain and phase response.
+
+5. Describe the frequency response of a digital filter. How is it typically represented, and what information does it provide?
+The frequency response of a digital filter describes how the filter alters the amplitude and phase of incoming waves at different discrete frequencies. It is typically represented using a Bode plot or separate magnitude and phase plots, where the magnitude is often plotted logarithmically in decibels (dB) against a normalized frequency axis. It provides vital information such as the filter's cutoff frequencies, bandwidth, passband ripple, and stopband attenuation.
+
+6. How does the Bode plot for discrete-time systems differ from that for continuous-time systems?
+The Bode plot for a continuous-time system (S-domain) extends infinitely along the frequency axis from zero to infinity. In contrast, the Bode plot for a discrete-time system (Z-domain) is periodic and mathematically only needs to be plotted up to the Nyquist frequency ($f_s/2$ or $\pi$ radians/sample). This is because digital frequencies simply wrap endlessly around the unit circle, meaning any frequency above the Nyquist limit is just an alias of a lower frequency.
+
+13. Define FIR and IIR filters. Explain the main differences between them in terms of complexity, efficiency, stability and phase response.
+FIR (Finite Impulse Response) filters rely only on current and past inputs, while IIR (Infinite Impulse Response) filters use feedback loops from past outputs. IIR filters are highly efficient, requiring lower computational complexity (fewer taps) to achieve steep cutoffs, but they can easily become unstable and inherently suffer from non-linear phase distortion. FIR filters are much less efficient (requiring many more taps for steep cutoffs) but they are strictly stable and can be easily designed to have perfectly linear phase, ensuring no time-domain distortion.

@@ -67,7 +67,7 @@ We would use 512 samples for the FFT. The first 300 would be the actual samples 
 
 17. Why must sampling frequency appear in PSD scaling?
 
-We scale by Fs because we need to divide the power by the physical width of the frequency bin to get a "density."
+We scale by Fs because we need to divide the power by the physical width of the frequency bin to get a "density".
 
 18. What is meant by a one-sided spectrum? When is it a valid measure of the energy content of a signal?
 

@@ -15,7 +15,7 @@ can block specific frequencies, and they determine the amplitude and phase of th
 
 All pole filter: H(s) = K / ((s-p1) * (s-p2) * ... * (s-pn))
 As s approaches infinity, H(s) approaches 0. Thus an all pole filter will block high frequencies. It can't be a high pass filter.
-It can't be a notch filter either because it blocks high filters. It can be a band pass filter if the poles are close to the imaginary axis.
+It can't be a notch filter either because it blocks high frequencies. It can be a band pass filter if the poles are close to the imaginary axis.
 
 5. What kind of filter does the transfer function H(s) = s / (s+1) represent? Argue it using words instead of calculations.
 
@@ -42,7 +42,7 @@ This allows the analys of divergent signals since the standard FT doesn't allow 
 
 11. Explain the region of convergence (ROC) for the z-transform. Why is it important?
 
-The Region of Convergence (ROC) is the specific set of points in the complex $z$-plane where the z-transform summation mathematically converges to
+The Region of Convergence (ROC) is the specific set of points in the complex z-plane where the z-transform summation mathematically converges to
 a finite value. It is crucial because a single algebraic expression can represent completely different time-domain signals depending entirely on its ROC.
 Furthermore, analyzing where the ROC sits relative to the unit circle instantly tells engineers whether a digital system is causal and stable.
 

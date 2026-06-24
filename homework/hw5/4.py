@@ -54,6 +54,6 @@ for n in np.arange(-Nsamp//2, Nsamp//2):
     xrec += xhat[n]*np.sinc(t/T - n)
 
 plt.plot(fftshift(t), fftshift(x))
-plt.plot(fftshift(t), fftshift(xrec), '.')
+plt.plot(fftshift(t), fftshift(xrec), 'k--')
 
 plt.show()
